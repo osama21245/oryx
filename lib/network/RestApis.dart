@@ -3,13 +3,13 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
-import '../extensions/extension_util/widget_extensions.dart';
-import '../extensions/system_utils.dart';
-import '../languageConfiguration/ServerLanguageResponse.dart';
-import '../models/property_list_model.dart';
+
 import '../extensions/extension_util/int_extensions.dart';
 import '../extensions/extension_util/string_extensions.dart';
+import '../extensions/extension_util/widget_extensions.dart';
 import '../extensions/shared_pref.dart';
+import '../extensions/system_utils.dart';
+import '../languageConfiguration/ServerLanguageResponse.dart';
 import '../main.dart';
 import '../models/app_setting_response.dart';
 import '../models/article_response.dart';
@@ -30,6 +30,7 @@ import '../models/payment_list_model.dart';
 import '../models/property_contact_info_response.dart';
 import '../models/property_details_model.dart';
 import '../models/property_inquiry_response.dart';
+import '../models/property_list_model.dart';
 import '../models/property_type_model.dart';
 import '../models/purchase_extra_limit_response.dart';
 import '../models/search_response_model.dart';
@@ -117,7 +118,9 @@ Future<LogInResponse> updateProfileApi(Map req) async {
 // }
 
 Future<DashboardResponse> getDashBoardData(Map request) async {
-  return DashboardResponse.fromJson(await handleResponse(await buildHttpResponse('dashboard-list', request: request, method: HttpMethod.POST)).then((value) => value));
+  return DashboardResponse.fromJson(await handleResponse(await buildHttpResponse('dashboard-list', request: request, method: HttpMethod.POST)).then((value) {
+    print("Dashboard Response: $value");
+    return value;}));
 }
 
 Future<ViewPropertyResponse> getPropertiesView(int id) async {

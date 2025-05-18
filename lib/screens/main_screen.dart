@@ -63,9 +63,9 @@ class _MainScreenState extends State<MainScreen> {
              if(data?.propertyCity?.isNotEmpty ?? false) GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
-                    crossAxisSpacing: 16.0,
-                    mainAxisSpacing: 16.0,
-                    childAspectRatio: 1.0,
+                    // crossAxisSpacing: 10.0,
+                    // mainAxisSpacing: 10.0,
+                    childAspectRatio: 1.5/1.9
                   ),
                   shrinkWrap: true,
                   padding: EdgeInsets.all(16.0),

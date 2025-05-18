@@ -5,12 +5,12 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
-import '../screens/login_screen.dart';
 
 import '../../main.dart';
 import '../extensions/common.dart';
 import '../extensions/extension_util/int_extensions.dart';
 import '../extensions/shared_pref.dart';
+import '../screens/login_screen.dart';
 import '../utils/app_config.dart';
 import '../utils/constants.dart';
 
@@ -110,6 +110,7 @@ Future<Response> buildHttpResponse(String endPoint, {HttpMethod method = HttpMet
 // }
 
 Future handleResponse(Response response) async {
+  print("Response: ${response.statusCode} ${response.body}");
   if (!await isNetworkAvailable()) {
     throw errorInternetNotAvailable;
   }
