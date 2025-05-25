@@ -49,13 +49,13 @@ class _AmenityTextFiledComponentState extends State<AmenityTextFiledComponent> {
               : widget.amenityType == AMENITY_TYPE_TEXTAREA
                   ? TextFieldType.MULTILINE
                   : TextFieldType.NAME,
-          isValidationRequired: true,
+          isValidationRequired: false,
           decoration: defaultInputDecoration(context, fillColor: primaryExtraLight, label: language.enter + " " + widget.amenityValueData!.validate()),
           onFieldSubmitted: (value) {
-            if (textBoxController.text.isNotEmpty) {
+            // if (textBoxController.text.isNotEmpty) {
               sendRadioData(widget.amenityID, textBoxController.text);
               setState(() {});
-            }
+            // }
           },
           onChanged: (v) {
             sendRadioData(widget.amenityID, textBoxController.text);

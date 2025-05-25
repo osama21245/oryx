@@ -7,6 +7,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
 import '../components/advertisement_property_component.dart';
+import '../components/carouser_slider_components.dart';
 import '../components/news_components.dart';
 import '../components/other_property_component.dart';
 import '../components/property_components.dart';
@@ -83,7 +84,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    init();
+    // init();
     setState(() {});
   }
 
@@ -238,9 +239,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       searchWidget(),
                       categoryList(),
                       if (data!.slider!.isNotEmpty) SlidesComponents(data: data!.slider),
+                      if (data!.property!.isNotEmpty)  CarouserSliderComponents(data: data!),
                       if (userStore.mRecentSearchList.isNotEmpty) userSearchList(),
                       if (data!.property!.isNotEmpty) propertiesList(),
-                      if (data!.advertisementProperty!.isNotEmpty) advertiseListWidget(),
+                     if (data!.advertisementProperty!.isNotEmpty) advertiseListWidget(),
                       selectBHK(),
                       if (data!.nearByProperty!.isNotEmpty) nearByPropertyList(),
                       if (myList.isNotEmpty) myListWidget(),

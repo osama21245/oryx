@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:intl/intl.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -275,7 +275,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       }
     }
 
-    if (!isAmenityIsEmpty) {
+    // if (!isAmenityIsEmpty) {
       multiPartRequest.headers.addAll(buildHeaderTokens());
       sendMultiPartRequest(
         multiPartRequest,
@@ -307,11 +307,11 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       ).catchError((e) {
         toast(e.toString());
       }).whenComplete(() => appStore.setLoading(false));
-    } else {
-      isAmenityIsEmpty = false;
-      toast(language.addRequiredAmenityMessage);
-      setState(() {});
-    }
+    // } else {
+      // isAmenityIsEmpty = false;
+      // toast(language.addRequiredAmenityMessage);
+      // setState(() {});
+    // }
   }
 
   //end region
@@ -451,53 +451,59 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
           color: primaryColor,
           textColor: Colors.white,
           onTap: () {
-            if (appStore.addPropertyIndex == 0) {
-              if (selectedCategoryId != null) {
-                appStore.addPropertyIndex = 1;
-              } else {
-                toast(language.pleaseSelectCategory);
-              }
-            } else if (appStore.addPropertyIndex == 1) {
-              if (mSecondComponentFormKey.currentState!.validate()) {
-                if (widget.propertyFor == 0 || widget.propertyFor == 2) {
-                  if (priceDurationValue != null &&
-                      selectedImages.isNotEmpty &&
-                      mainImagePath != null &&
-                      selectedBhkIndex != null
-                      //  &&
-                      // latitude != null &&
-                      // longitude != null &&
-                      // mapLocation.text.isNotEmpty
-                      ) {
-                    appStore.addPropertyIndex = 2;
-                  } else {
-                    if (priceDurationValue.isEmptyOrNull) toast(language.pleaseSelectPriceDuration);
-                    if (mainImagePath.isEmptyOrNull) toast(language.pleaseSelectMainPicture);
-                    if (selectedImages.isEmpty) toast(language.pleaseSelectOtherPicture);
-                    if (selectedBhkIndex == null) toast(language.pleaseSelectBHK);
-                    // if (mapLocation.text.isEmpty) toast(language.pleaseSelectAddress);
-                  }
-                } else {
-                  print('dddddddddddddddddddddddddd');
-                  if (selectedImages.isNotEmpty && mainImagePath != null && selectedBhkIndex != null) {
-                    appStore.addPropertyIndex = 2;
+         try{
 
-                    setState(() {});
-                  } else {
-                    if (mainImagePath == null) toast(language.pleaseSelectMainPicture);
-                    if (selectedImages.isEmpty) toast(language.pleaseSelectOtherPicture);
-                    if (selectedBhkIndex == null) toast(language.pleaseSelectBHK);
-                  }
-                }
-              }
-              log('Selected index $selectedCategoryId');
-              addSelectedCategoryData();
-            } else {
-              if (mThirdComponentFormKey.currentState!.validate()) {
-                saveProperty();
-              }
-            }
-            setState(() {});
+           if (appStore.addPropertyIndex == 0) {
+             if (selectedCategoryId != null) {
+               appStore.addPropertyIndex = 1;
+             } else {
+               toast(language.pleaseSelectCategory);
+             }
+           } else if (appStore.addPropertyIndex == 1) {
+             if (mSecondComponentFormKey.currentState!.validate()) {
+               if (widget.propertyFor == 0 || widget.propertyFor == 2) {
+                 if (priceDurationValue != null &&
+                     selectedBhkIndex != null
+                 //  &&
+                 // latitude != null &&
+                 // longitude != null &&
+                 // mapLocation.text.isNotEmpty
+                 ) {
+                   appStore.addPropertyIndex = 2;
+                 } else {
+                   if (priceDurationValue.isEmptyOrNull) toast(language.pleaseSelectPriceDuration);
+                   if (mainImagePath.isEmptyOrNull) toast(language.pleaseSelectMainPicture);
+                   if (selectedImages.isEmpty) toast(language.pleaseSelectOtherPicture);
+                   if (selectedBhkIndex == null) toast(language.pleaseSelectBHK);
+                   // if (mapLocation.text.isEmpty) toast(language.pleaseSelectAddress);
+                 }
+               } else {
+                 print('dddddddddddddddddddddddddd');
+                 if (selectedImages.isNotEmpty && mainImagePath != null && selectedBhkIndex != null) {
+                   appStore.addPropertyIndex = 2;
+
+                   setState(() {});
+                 } else {
+                   if (mainImagePath == null) toast(language.pleaseSelectMainPicture);
+                   if (selectedImages.isEmpty) toast(language.pleaseSelectOtherPicture);
+                   if (selectedBhkIndex == null) toast(language.pleaseSelectBHK);
+                 }
+               }
+             }
+             log('Selected index $selectedCategoryId');
+             addSelectedCategoryData();
+           } else {
+             if (mThirdComponentFormKey.currentState!.validate()) {
+               saveProperty();
+             }
+           }
+           setState(() {});
+
+         }catch(error){
+           print(
+             'errooooooooo$error');
+         }
+
           },
         ).paddingOnly(right: 16, bottom: 16, left: 16, top: 0),
       );
@@ -533,10 +539,10 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                 value: sellerType == 0
                     ? OWNER
                     : sellerType == 1
-                        ? BROKER
-                        : sellerType == 2
-                            ? BUILDER
-                            : mUserType,
+                    ? BROKER
+                    : sellerType == 2
+                    ? BUILDER
+                    : mUserType,
                 onChanged: (String? value) {
                   mUserType = value.validate();
                   if (mUserType == OWNER) {
@@ -643,10 +649,10 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
               value: furnishedType == 0
                   ? UNFURNISHED
                   : furnishedType == 1
-                      ? FULLY
-                      : furnishedType == 2
-                          ? SEMI
-                          : mFurnishedType,
+                  ? FULLY
+                  : furnishedType == 2
+                  ? SEMI
+                  : mFurnishedType,
               onChanged: (String? value) {
                 mFurnishedType = value.validate();
 
@@ -673,23 +679,23 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
               decoration: defaultInputDecoration(context, label: language.enterSquareFeetArea),
             ),
             20.height,
-            RequiredValidationText(required: true, titleText: language.ageOfProperty + language.year),
-            10.height,
-            AppTextField(
-              isValidationRequired: true,
-              textInputAction: TextInputAction.go,
-              controller: ageOfPropertyController,
-              focus: ageOfPropertyFocus,
-              textFieldType: TextFieldType.NUMBER,
-              keyboardType: TextInputType.number,
-              decoration: defaultInputDecoration(context, label: language.enterAgeOfProperty),
-            ),
-            20.height,
+            // RequiredValidationText(required: true, titleText: language.ageOfProperty + language.year),
+            // 10.height,
+            // AppTextField(
+            //   isValidationRequired: true,
+            //   textInputAction: TextInputAction.go,
+            //   controller: ageOfPropertyController,
+            //   focus: ageOfPropertyFocus,
+            //   textFieldType: TextFieldType.NUMBER,
+            //   keyboardType: TextInputType.number,
+            //   decoration: defaultInputDecoration(context, label: language.enterAgeOfProperty),
+            // ),
+            // 20.height,
             RequiredValidationText(required: true, titleText: language.description),
             10.height,
             AppTextField(
               isValidationRequired: true,
-              textInputAction: TextInputAction.go,
+              textInputAction: TextInputAction.newline,
               controller: descriptionController,
               focus: descriptionFocus,
               textFieldType: TextFieldType.MULTILINE,
@@ -711,6 +717,10 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                 context,
                 label: language.enterPrice,
               ),
+            onChanged: (value){
+              onChangePriceField(value);
+
+               },
             ),
             20.height,
             if (widget.propertyFor == 0 || widget.propertyFor == 2) RequiredValidationText(required: true, titleText: language.priceDuration),
@@ -879,24 +889,24 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             // ),
               citySelectionWidget(),
             20.height,
-            RequiredValidationText(required: true, titleText: language.addPicture),
+            RequiredValidationText(required: false, titleText: language.addPicture),
             10.height,
             if (mainImagePath != null)
               Stack(
                 children: [
                   mainImagePath!.contains('https')
                       ? cachedImage(
-                          height: context.height() * 0.25,
-                          fit: BoxFit.cover,
-                          width: context.width(),
-                          mainImagePath.validate(),
-                        ).cornerRadiusWithClipRRect(8).center()
+                    height: context.height() * 0.25,
+                    fit: BoxFit.cover,
+                    width: context.width(),
+                    mainImagePath.validate(),
+                  ).cornerRadiusWithClipRRect(8).center()
                       : Image.file(
-                          height: context.height() * 0.25,
-                          fit: BoxFit.cover,
-                          width: context.width(),
-                          File(mainImagePath.validate()),
-                        ).cornerRadiusWithClipRRect(8).center(),
+                    height: context.height() * 0.25,
+                    fit: BoxFit.cover,
+                    width: context.width(),
+                    File(mainImagePath.validate()),
+                  ).cornerRadiusWithClipRRect(8).center(),
                   Positioned(
                     top: 2,
                     right: 2,
@@ -938,7 +948,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                 ),
               ),
             20.height,
-            RequiredValidationText(required: true, titleText: language.addOtherPicture),
+            RequiredValidationText(required: false, titleText: language.addOtherPicture),
             10.height,
             if (selectedImages.isNotEmpty)
               AnimatedWrap(
@@ -1216,9 +1226,23 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
       toast(language.pleaseAddAmenities);
     }
   }
+void onChangePriceField(String value){
+  value = formNum(
+    value.replaceAll(',', ''),
+  );
+  priceController.value = TextEditingValue(
+    text: value,
+    selection: TextSelection.collapsed(
+      offset: value.length,
+    ),
+  );
+}
 
-//endregion
-
+  String formNum(String s) {
+    return NumberFormat.decimalPattern().format(
+      int.parse(s),
+    );
+  }
 //region Address get
   latLongFunction(num? mapLatitude, num? mapLongitude) {
     latitude = mapLatitude;
