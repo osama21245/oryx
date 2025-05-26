@@ -6,6 +6,7 @@ class RequiredValidationText extends StatefulWidget {
   final String? titleText;
   final bool required;
 
+
   RequiredValidationText({this.required = false, this.titleText});
 
   @override

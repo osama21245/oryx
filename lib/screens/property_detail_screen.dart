@@ -283,8 +283,8 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                                 mDetail!.data!.propertyFor == 0
                                     ? language.forRent
                                     : mDetail!.data!.propertyFor == 1
-                                        ? language.forSell
-                                        : language.pgCoLiving,
+                                    ? language.forSell
+                                    : language.pgCoLiving,
                                 style: primaryTextStyle(color: primaryColor, size: 12),
                               ).center(),
                             ),
@@ -297,11 +297,11 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                             mDetail!.data!.propertyFor == 1
                                 ? PriceWidget(price: formatNumberString(mDetail!.data!.price!), textStyle: primaryTextStyle(size: 18, color: primaryColor))
                                 : Row(
-                                    children: [
-                                      PriceWidget(price: formatNumberString(mDetail!.data!.price!), textStyle: primaryTextStyle(size: 18, color: primaryColor)),
-                                      Text('/ ' + durationWidget(mDetail!.data!.priceDuration), style: primaryTextStyle(size: 18, color: primaryColor)),
-                                    ],
-                                  )
+                              children: [
+                                PriceWidget(price: formatNumberString(mDetail!.data!.price!), textStyle: primaryTextStyle(size: 18, color: primaryColor)),
+                                Text('/ ' + durationWidget(mDetail!.data!.priceDuration), style: primaryTextStyle(size: 18, color: primaryColor)),
+                              ],
+                            )
                           ],
                         ).paddingSymmetric(horizontal: 16),
                         10.height,
@@ -323,17 +323,16 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                         16.height,
                         photoGalleryWidget(),
                         16.height,
-                        mapWidget(),
+                      //  mapWidget(),
                         16.height,
-                        costOfLivingWidget(),
+                         costOfLivingWidget(),
                         16.height,
                         // nearByGoogle(),
                         16.height,
                         if (mDetail!.propertyAmenityValue!.isNotEmpty) AmenityScreen(amenityValue: mDetail!.propertyAmenityValue!),
                         if (widget.update == true && mDetail != null) 40.height,
                       ],
-                    ),
-                  ],
+                    ),                  ],
                 ),
               ),
             Loader().center().visible(appStore.isLoading)
