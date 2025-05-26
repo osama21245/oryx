@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../extensions/extension_util/widget_extensions.dart';
+
 import '../extensions/common.dart';
+import '../extensions/extension_util/widget_extensions.dart';
 import '../main.dart';
 import '../screens/otp_screen.dart';
 
