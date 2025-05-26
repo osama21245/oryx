@@ -239,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       searchWidget(),
                       categoryList(),
                       if (data!.slider!.isNotEmpty) SlidesComponents(data: data!.slider),
-                      if (data!.property!.isNotEmpty)  CarouserSliderComponents(data: data!),
+                      // if (data!.property!.isNotEmpty)  CarouserSliderComponents(data: data!),
                       if (userStore.mRecentSearchList.isNotEmpty) userSearchList(),
                       if (data!.property!.isNotEmpty) propertiesList(),
                      if (data!.advertisementProperty!.isNotEmpty) advertiseListWidget(),
