@@ -33,7 +33,7 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
+  // TextEditingController emailController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
   final GlobalKey<FormState> signUpFormKey = GlobalKey<FormState>();
 
@@ -57,7 +57,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         "first_name": firstNameController.text,
         "last_name": lastNameController.text,
         "username": phoneController.text,
-        "email": emailController.text,
+        // "email": emailController.text,
         "password": getStringAsync(FIREBASE_USER_ID),
         "user_type": LoginUser,
         "login_type": LoginTypeOTP,
@@ -131,17 +131,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     20.height,
                     Text(language.email + ":", style: primaryTextStyle()),
                     10.height,
-                    AppTextField(
-                      controller: emailController,
-                      textFieldType: TextFieldType.EMAIL,
-                      isValidationRequired: true,
-                      focus: emailFocus,
-                      decoration: defaultInputDecoration(context, label: language.enterEmail),
-                      onFieldSubmitted: (p0) {
-                        registerApiCall();
-                        setState(() {});
-                      },
-                    ),
+                    // AppTextField(
+                    //   controller: emailController,
+                    //   textFieldType: TextFieldType.EMAIL,
+                    //   isValidationRequired: true,
+                    //   focus: emailFocus,
+                    //   decoration: defaultInputDecoration(context, label: language.enterEmail),
+                    //   onFieldSubmitted: (p0) {
+                    //     registerApiCall();
+                    //     setState(() {});
+                    //   },
+                    // ),
                     40.height,
                     AppButton(
                       text: language.signUp,
