@@ -39,9 +39,11 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
   }
 
   getList() {
-    propertyForList.add(AddPropertyModel(language.rentProperty, ic_rate, false));
-    propertyForList.add(AddPropertyModel(language.sellProperty, ic_sell, false));
-    propertyForList.add(AddPropertyModel(language.pgColivingProperty, ic_bed, false));
+    propertyForList
+        .add(AddPropertyModel(language.rentProperty, ic_rate, false));
+    propertyForList
+        .add(AddPropertyModel(language.sellProperty, ic_sell, false));
+    // propertyForList.add(AddPropertyModel(language.pgColivingProperty, ic_bed, false));
   }
 
   @override
@@ -86,7 +88,13 @@ class _AddPropertyDialogState extends State<AddPropertyDialog> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Image.asset(selectedIndex != i ? ic_radio : ic_radio_fill, height: 20, width: 20, color: selectedIndex != i ? primaryColor : Colors.white),
+                        Image.asset(
+                            selectedIndex != i ? ic_radio : ic_radio_fill,
+                            height: 20,
+                            width: 20,
+                            color: selectedIndex != i
+                                ? primaryColor
+                                : Colors.white),
                         10.width,
                         Image.asset(
                           propertyForList[i].img.validate(),

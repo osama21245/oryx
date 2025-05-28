@@ -65,4 +65,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'orex-b59ce.firebasestorage.app',
     iosBundleId: 'com.example.orex',
   );
+
 }
