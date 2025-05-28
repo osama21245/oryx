@@ -37,7 +37,13 @@ class OTPScreen extends StatefulWidget {
   final PhoneAuthCredential? credential;
   final Function? onCall;
 
-  OTPScreen({this.verificationId, this.isCodeSent, this.phoneNumber, this.mobileNo, this.credential, this.onCall});
+  OTPScreen(
+      {this.verificationId,
+      this.isCodeSent,
+      this.phoneNumber,
+      this.mobileNo,
+      this.credential,
+      this.onCall});
 
   @override
   State<OTPScreen> createState() => _OTPScreenState();
@@ -63,7 +69,8 @@ class _OTPScreenState extends State<OTPScreen> {
     resendTimeout = 60;
     isResendEnabled = false;
     setState(() {});
-    await loginWithOTP(context, widget.phoneNumber.validate().trim(), widget.phoneNumber.validate().trim(), false, () {
+    await loginWithOTP(context, widget.phoneNumber.validate().trim(),
+        widget.phoneNumber.validate().trim(), false, () {
       init();
       setState(() {});
     }).then((value) {
@@ -79,8 +86,11 @@ class _OTPScreenState extends State<OTPScreen> {
   Future<void> submit() async {
     hideKeyboard(context);
     await appStore.setLoading(true);
-    AuthCredential credential = PhoneAuthProvider.credential(verificationId: widget.verificationId!, smsCode: otpCode);
-    await FirebaseAuth.instance.signInWithCredential(credential).then((result) async {
+    AuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: widget.verificationId!, smsCode: otpCode);
+    await FirebaseAuth.instance
+        .signInWithCredential(credential)
+        .then((result) async {
       Map req = {
         "username": widget.phoneNumber!.replaceAll('+', ''),
         "login_type": LoginTypeOTP,
@@ -96,12 +106,14 @@ class _OTPScreenState extends State<OTPScreen> {
 
         if (value.isUserExist == false) {
           finish(context);
-          SignUpScreen(phoneNumber: widget.phoneNumber!.replaceAll('+', '')).launch(context);
+          SignUpScreen(phoneNumber: widget.phoneNumber!.replaceAll('+', ''))
+              .launch(context);
         } else {
           await appStore.setLogin(true);
           setValue(TOKEN, value.data!.apiToken.validate());
           userStore.setToken(value.data!.apiToken.validate());
-          await getUSerDetail(context, value.data!.id.validate()).whenComplete(() {
+          await getUSerDetail(context, value.data!.id.validate())
+              .whenComplete(() {
             MainScreen().launch(context, isNewTask: true);
           });
         }
@@ -110,9 +122,11 @@ class _OTPScreenState extends State<OTPScreen> {
         await appStore.setLoading(false);
         if (e.toString().contains('invalid_username')) {
           finish(context);
-          SignUpScreen(phoneNumber: widget.phoneNumber!.replaceAll('+', '')).launch(context);
+          SignUpScreen(phoneNumber: widget.phoneNumber!.replaceAll('+', ''))
+              .launch(context);
         } else {
-          if (e.toString().contains('OTP is invalid')) toast(language.invalidOtp);
+          if (e.toString().contains('OTP is invalid'))
+            toast(language.invalidOtp);
         }
       });
     }).catchError((e) async {
@@ -136,12 +150,10 @@ class _OTPScreenState extends State<OTPScreen> {
         setState(() {
           resendTimeout--;
         });
-
       } else {
         setState(() {
           isResendEnabled = true;
         });
-
       }
     });
   }
@@ -171,8 +183,10 @@ class _OTPScreenState extends State<OTPScreen> {
     return AnnotatedRegion(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: appStore.isDarkModeOn ? Brightness.light : Brightness.light,
-        systemNavigationBarIconBrightness: appStore.isDarkModeOn ? Brightness.light : Brightness.light,
+        statusBarIconBrightness:
+            appStore.isDarkModeOn ? Brightness.light : Brightness.light,
+        systemNavigationBarIconBrightness:
+            appStore.isDarkModeOn ? Brightness.light : Brightness.light,
       ),
       child: WillPopScope(
         onWillPop: () async {
@@ -182,15 +196,22 @@ class _OTPScreenState extends State<OTPScreen> {
         child: Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: false,
-            leading: Image.asset(ic_back, color: primaryColor, height: 16, width: 16).onTap(() {
+            leading:
+                Image.asset(ic_back, color: primaryColor, height: 16, width: 16)
+                    .onTap(() {
               finish(context);
             }).paddingOnly(top: 20, bottom: 20),
             centerTitle: true,
-            backgroundColor: appStore.isDarkModeOn ? scaffoldColorDark : selectIconColor,
+            backgroundColor:
+                appStore.isDarkModeOn ? scaffoldColorDark : selectIconColor,
             elevation: 0,
             title: Text(
               language.verifyPhoneNumber,
-              style: boldTextStyle(size: 18, color: appStore.isDarkModeOn ? selectIconColor : scaffoldColorDark),
+              style: boldTextStyle(
+                  size: 18,
+                  color: appStore.isDarkModeOn
+                      ? selectIconColor
+                      : scaffoldColorDark),
             ),
           ),
           body: Stack(
@@ -210,11 +231,14 @@ class _OTPScreenState extends State<OTPScreen> {
                             text: language.enterTheConfirmationCodeWeSentTo,
                             style: secondaryTextStyle(size: 16),
                           ),
-                          TextSpan(text: " " + widget.phoneNumber.toString().replaceAll(RegExp(r'(?<=.{3}).(?=.*...)'), '*'), style: boldTextStyle(size: 16, color: grayColor)),
+                          TextSpan(
+                              text: " " +
+                                  widget.phoneNumber.toString().replaceAll(
+                                      RegExp(r'(?<=.{3}).(?=.*...)'), '*'),
+                              style: boldTextStyle(size: 16, color: grayColor)),
                         ],
                       ),
                     ),
-
                     20.height,
                     Image.asset(
                       ic_verify,
@@ -222,27 +246,45 @@ class _OTPScreenState extends State<OTPScreen> {
                       height: context.height() * 0.4,
                     ),
                     20.height,
-                    Align(alignment: Alignment.topLeft, child: Text(language.enterOTP, style: boldTextStyle(size: 18, color: primaryColor), textAlign: TextAlign.start)),
+                    Align(
+                        alignment: Alignment.topLeft,
+                        child: Text(language.enterOTP,
+                            style: boldTextStyle(size: 18, color: primaryColor),
+                            textAlign: TextAlign.start)),
                     10.height,
-                    OTPTextField(
-                        otpFieldStyle: OtpFieldStyle(backgroundColor: appStore.isDarkModeOn ? cardDarkColor : cardLightColor),
-                        controller: otpController,
-                        length: 6,
-                        keyboardType: TextInputType.number,
-                        width: MediaQuery.of(context).size.width,
-                        fieldWidth: 45,
-                        style: primaryTextStyle(),
-                        textFieldAlignment: MainAxisAlignment.spaceAround,
-                        fieldStyle: FieldStyle.box,
-                        onChanged: (s) {
-                          otpCode = s;
-                        },
-                        onCompleted: (pin) async {
-                          otpCode = pin;
-                          submit();
+                    Row(
+                      children: [
+                        // Icon(
+                        //   Icons.arrow_forward_ios,
+                        //   color: primaryColor,
+                        //   size: 20,
+                        // ),
+                        Expanded(
+                          child: OTPTextField(
+                              otpFieldStyle: OtpFieldStyle(
+                                  backgroundColor: appStore.isDarkModeOn
+                                      ? cardDarkColor
+                                      : cardLightColor),
+                              controller: otpController,
+                              length: 6,
+                              keyboardType: TextInputType.number,
+                              width: MediaQuery.of(context).size.width,
+                              fieldWidth: 45,
+                              style: primaryTextStyle(),
+                              textFieldAlignment: MainAxisAlignment.spaceAround,
+                              fieldStyle: FieldStyle.box,
+                              onChanged: (s) {
+                                otpCode = s;
+                              },
+                              onCompleted: (pin) async {
+                                otpCode = pin;
+                                submit();
 
-                          setState(() {});
-                        }),
+                                setState(() {});
+                              }),
+                        )
+                      ],
+                    ),
                     10.height,
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,10 +293,16 @@ class _OTPScreenState extends State<OTPScreen> {
                       children: [
                         Row(
                           children: [
-                            Text(language.didntReceiveCode, style: primaryTextStyle(color: grayColor, size: 16)),
+                            Text(language.didntReceiveCode,
+                                style: primaryTextStyle(
+                                    color: grayColor, size: 16)),
                             8.width,
                             isResendEnabled
-                                ? Text(language.resend, style: boldTextStyle(color: primaryColor)).paddingAll(2).onTap(() {
+                                ? Text(language.resend,
+                                        style:
+                                            boldTextStyle(color: primaryColor))
+                                    .paddingAll(2)
+                                    .onTap(() {
                                     setState(() {
                                       // if (isResendEnabled) {
                                       resendOTP();
@@ -292,7 +340,9 @@ class _OTPScreenState extends State<OTPScreen> {
                     ),
                     20.height,
                   ],
-                ).paddingSymmetric(horizontal: 20).paddingOnly(top: context.statusBarHeight + 20),
+                )
+                    .paddingSymmetric(horizontal: 20)
+                    .paddingOnly(top: context.statusBarHeight + 20),
               ),
               Observer(
                 builder: (context) {

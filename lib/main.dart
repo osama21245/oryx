@@ -11,7 +11,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:orex/firebase_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:firebase_app_check/firebase_app_check.dart';
 import '../extensions/extension_util/string_extensions.dart';
 import '../screens/no_internet_screen.dart';
 import '../screens/splash_screen.dart';
@@ -30,7 +30,6 @@ import 'languageConfiguration/BaseLanguage.dart';
 import 'languageConfiguration/LanguageDataConstant.dart';
 import 'languageConfiguration/LanguageDefaultJson.dart';
 import 'languageConfiguration/ServerLanguageResponse.dart';
-
 
 final navigatorKey = GlobalKey<NavigatorState>();
 UserService userService = UserService();
@@ -56,14 +55,19 @@ get getContext1 => navigatorKey.currentState?.overlay?.context;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform
-             ).then((value) {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform)
+      .then((value) {
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
   });
+  await FirebaseAppCheck.instance.activate(
+    androidProvider: AndroidProvider.debug,
+    appleProvider: AppleProvider.debug,
+  );
+
   sharedPreferences = await SharedPreferences.getInstance();
   appStore.setLogin(getBoolAsync(IS_LOGGED_IN), isInitializing: true);
-  int themeModeIndex = getIntAsync(THEME_MODE_INDEX, defaultValue: AppThemeMode().themeModeLight);
+  int themeModeIndex = getIntAsync(THEME_MODE_INDEX,
+      defaultValue: AppThemeMode().themeModeLight);
   if (themeModeIndex == AppThemeMode().themeModeLight) {
     appStore.setDarkMode(false);
   } else if (themeModeIndex == AppThemeMode().themeModeDark) {
@@ -71,7 +75,8 @@ void main() async {
   }
 
 // Added By SK
-  appStore.setLanguage(getStringAsync(SELECTED_LANGUAGE_CODE, defaultValue: defaultLanguageCode));
+  appStore.setLanguage(getStringAsync(SELECTED_LANGUAGE_CODE,
+      defaultValue: defaultLanguageCode));
 
   // Remove By SK
   /*await initialize(aLocaleLanguageList: languageList());
@@ -145,7 +150,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void didChangeDependencies() {
-    if (getIntAsync(THEME_MODE_INDEX) == ThemeModeSystem) appStore.setDarkMode(MediaQuery.of(context).platformBrightness == Brightness.dark);
+    if (getIntAsync(THEME_MODE_INDEX) == ThemeModeSystem)
+      appStore.setDarkMode(
+          MediaQuery.of(context).platformBrightness == Brightness.dark);
     super.didChangeDependencies();
   }
 
@@ -164,7 +171,8 @@ class _MyAppState extends State<MyApp> {
         // Changes By SK
         supportedLocales: getSupportedLocales(),
         // Change By SK
-        locale: Locale(appStore.selectedLanguage.validate(value: defaultLanguageCode)),
+        locale: Locale(
+            appStore.selectedLanguage.validate(value: defaultLanguageCode)),
         localizationsDelegates: [
           CountryLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
