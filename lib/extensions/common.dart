@@ -92,7 +92,20 @@ Future<dynamic> pasteObject() async {
 }
 
 /// Enum for Link Provider
-enum LinkProvider { PLAY_STORE, APPSTORE, FACEBOOK, INSTAGRAM, LINKEDIN, TWITTER, YOUTUBE, REDDIT, TELEGRAM, WHATSAPP, FB_MESSENGER, GOOGLE_DRIVE }
+enum LinkProvider {
+  PLAY_STORE,
+  APPSTORE,
+  FACEBOOK,
+  INSTAGRAM,
+  LINKEDIN,
+  TWITTER,
+  YOUTUBE,
+  REDDIT,
+  TELEGRAM,
+  WHATSAPP,
+  FB_MESSENGER,
+  GOOGLE_DRIVE
+}
 
 /// Use getSocialMediaLink function to build social media links
 String getSocialMediaLink(LinkProvider linkProvider, {String url = ''}) {
@@ -129,7 +142,8 @@ const double degrees2Radians = pi / 180.0;
 double radians(double degrees) => degrees * degrees2Radians;
 
 void afterBuildCreated(Function()? onCreated) {
-  makeNullable(SchedulerBinding.instance)!.addPostFrameCallback((_) => onCreated?.call());
+  makeNullable(SchedulerBinding.instance)!
+      .addPostFrameCallback((_) => onCreated?.call());
 }
 
 Widget dialogAnimatedWrapperWidget({
@@ -167,7 +181,9 @@ Widget dialogAnimatedWrapperWidget({
 
     case DialogAnimation.SLIDE_BOTTOM_TOP:
       return SlideTransition(
-        position: Tween(begin: Offset(0, 1), end: Offset.zero).chain(CurveTween(curve: curve)).animate(animation),
+        position: Tween(begin: Offset(0, 1), end: Offset.zero)
+            .chain(CurveTween(curve: curve))
+            .animate(animation),
         child: Opacity(
           opacity: animation.value,
           child: FadeTransition(opacity: animation, child: child),
@@ -176,7 +192,9 @@ Widget dialogAnimatedWrapperWidget({
 
     case DialogAnimation.SLIDE_LEFT_RIGHT:
       return SlideTransition(
-        position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero).chain(CurveTween(curve: curve)).animate(animation),
+        position: Tween(begin: Offset(1.0, 0.0), end: Offset.zero)
+            .chain(CurveTween(curve: curve))
+            .animate(animation),
         child: Opacity(
           opacity: animation.value,
           child: FadeTransition(opacity: animation, child: child),
@@ -185,7 +203,9 @@ Widget dialogAnimatedWrapperWidget({
 
     case DialogAnimation.SLIDE_RIGHT_LEFT:
       return SlideTransition(
-        position: Tween(begin: Offset(-1, 0), end: Offset.zero).chain(CurveTween(curve: curve)).animate(animation),
+        position: Tween(begin: Offset(-1, 0), end: Offset.zero)
+            .chain(CurveTween(curve: curve))
+            .animate(animation),
         child: Opacity(
           opacity: animation.value,
           child: FadeTransition(opacity: animation, child: child),
@@ -215,7 +235,8 @@ Route<T> buildPageRoute<T>(
       return PageRouteBuilder(
         pageBuilder: (c, a1, a2) => child,
         transitionsBuilder: (c, anim, a2, child) {
-          return RotationTransition(child: child, turns: ReverseAnimation(anim));
+          return RotationTransition(
+              child: child, turns: ReverseAnimation(anim));
         },
         transitionDuration: duration ?? pageRouteTransitionDurationGlobal,
       );
@@ -312,7 +333,7 @@ Uri mailTo({
 
 Widget dotIndicator(list, i, {bool isPersonal = false}) {
   return SizedBox(
-    height: 16,
+    height: 20,
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -320,8 +341,8 @@ Widget dotIndicator(list, i, {bool isPersonal = false}) {
         list.length,
         (ind) {
           return Container(
-            height: 4,
-            width: i == ind ? 30 : 12,
+            height: 10,
+            width: 10,
             margin: EdgeInsets.all(4),
             decoration: BoxDecoration(
                 color: i == ind
@@ -382,7 +403,8 @@ Future<T?> push<T>(
   PageRouteAnimation? pageRouteAnimation,
   Duration? duration,
 }) async {
-  final context = getContext; // Assuming getContext is a method or property that returns a BuildContext
+  final context =
+      getContext; // Assuming getContext is a method or property that returns a BuildContext
 
   if (isNewTask) {
     return await Navigator.of(context).pushAndRemoveUntil(
@@ -426,7 +448,6 @@ void toast(
   }
 }
 
-
 Widget emptyWidget() {
   return Center(
       child: Column(
@@ -448,11 +469,13 @@ Future<bool> checkPermission() async {
   // Request app level location permission
   LocationPermission locationPermission = await Geolocator.requestPermission();
 
-  if (locationPermission == LocationPermission.whileInUse || locationPermission == LocationPermission.always) {
-
+  if (locationPermission == LocationPermission.whileInUse ||
+      locationPermission == LocationPermission.always) {
     // Check system level location permission
     if (!await Geolocator.isLocationServiceEnabled()) {
-      return await Geolocator.openLocationSettings().then((value) => false).catchError((e) => false);
+      return await Geolocator.openLocationSettings()
+          .then((value) => false)
+          .catchError((e) => false);
     } else {
       return true;
     }
@@ -465,4 +488,3 @@ Future<bool> checkPermission() async {
     return false;
   }
 }
-

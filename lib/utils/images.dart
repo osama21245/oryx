@@ -34,6 +34,7 @@ const ic_about = "assets/ic_about.png";
 const ic_mail = "assets/ic_mail.png";
 const ic_property = "assets/ic_property.png";
 const ic_map_point = "assets/ic_map_point.png";
+const ic_moneys = "assets/moneys.png";
 const ic_premiums = "assets/ic_preminum.png";
 const no_data = "assets/no data.png";
 const ic_language = "assets/ic_language.png";
@@ -78,6 +79,8 @@ const ic_marks_all_read = "assets/ic_marks_all_read.png";
 const payment_failed = "assets/payment_failed.png";
 const payment_success = "assets/payment_success.json";
 const ic_cancel_subscription = "assets/ic_cancle_subscription.png";
+const ic_rent = "assets/rent.png";
+const ic_sale = "assets/sale.png";
 
 ///TODO remove this image
 // const ic_logo_dark = 'assets/ic_dark_logo.png';
