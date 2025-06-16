@@ -39,7 +39,9 @@ class _CategorySelectedScreenState extends State<CategorySelectedScreen> {
     super.initState();
     init();
     scrollController.addListener(() {
-      if (scrollController.position.pixels == scrollController.position.maxScrollExtent && !appStore.isLoading) {
+      if (scrollController.position.pixels ==
+              scrollController.position.maxScrollExtent &&
+          !appStore.isLoading) {
         if (page < numPage!) {
           page++;
           init();
@@ -84,8 +86,14 @@ class _CategorySelectedScreenState extends State<CategorySelectedScreen> {
   Widget build(BuildContext context) {
     return Observer(builder: (context) {
       return Scaffold(
-          appBar: appBarWidget(widget.categoryName.toString(), context1: context, titleSpace: 0),
-          bottomNavigationBar: showBannerAdOnCategorySelected && userStore.isSubscribe == 0 ?/*  showBannerAds(context) */SizedBox() : SizedBox(),
+          appBar: AppBar(
+            title: Text(widget.categoryName ?? 'Filter Category'),
+            centerTitle: true,
+          ),
+          bottomNavigationBar:
+              showBannerAdOnCategorySelected && userStore.isSubscribe == 0
+                  ? /*  showBannerAds(context) */ SizedBox()
+                  : SizedBox(),
           body: Stack(
             children: [
               mPropertyDataSelected.isNotEmpty
@@ -96,18 +104,27 @@ class _CategorySelectedScreenState extends State<CategorySelectedScreen> {
                       shrinkWrap: true,
                       itemCount: mPropertyDataSelected.length,
                       itemBuilder: (context, i) {
-                        return widget.categoryId == mPropertyDataSelected[i].categoryId
+                        return widget.categoryId ==
+                                mPropertyDataSelected[i].categoryId
                             ? AdvertisementPropertyComponent(
                                 property: mPropertyDataSelected[i],
                                 onCall: () {
                                   getPropertyApiCall();
                                 },
                                 isFullWidth: true,
-                              ).paddingOnly(bottom: 16).visible(widget.categoryId == mPropertyDataSelected[i].categoryId).onTap(() async {
-                                if (mPropertyDataSelected[i].premiumProperty == 1) {
+                              )
+                                .paddingOnly(bottom: 16)
+                                .visible(widget.categoryId ==
+                                    mPropertyDataSelected[i].categoryId)
+                                .onTap(() async {
+                                if (mPropertyDataSelected[i].premiumProperty ==
+                                    1) {
                                   if (userStore.subscription == "1") {
                                     if (userStore.isSubscribe != 0) {
-                                      bool? res = await PropertyDetailScreen(propertyId: mPropertyDataSelected[i].id).launch(context);
+                                      bool? res = await PropertyDetailScreen(
+                                              propertyId:
+                                                  mPropertyDataSelected[i].id)
+                                          .launch(context);
                                       if (res == true) {
                                         init();
                                       }
@@ -115,13 +132,19 @@ class _CategorySelectedScreenState extends State<CategorySelectedScreen> {
                                       SubscribeScreen().launch(context);
                                     }
                                   } else {
-                                    bool? res = await PropertyDetailScreen(propertyId: mPropertyDataSelected[i].id).launch(context);
+                                    bool? res = await PropertyDetailScreen(
+                                            propertyId:
+                                                mPropertyDataSelected[i].id)
+                                        .launch(context);
                                     if (res == true) {
                                       init();
                                     }
                                   }
                                 } else {
-                                  bool? res = await PropertyDetailScreen(propertyId: mPropertyDataSelected[i].id).launch(context);
+                                  bool? res = await PropertyDetailScreen(
+                                          propertyId:
+                                              mPropertyDataSelected[i].id)
+                                      .launch(context);
                                   if (res == true) {
                                     init();
                                   }
@@ -129,7 +152,8 @@ class _CategorySelectedScreenState extends State<CategorySelectedScreen> {
                               })
                             : SizedBox.shrink();
                       })
-                  : NoDataScreen(mTitle: language.resultNotFound).visible(!appStore.isLoading),
+                  : NoDataScreen(mTitle: language.resultNotFound)
+                      .visible(!appStore.isLoading),
               Loader().center().visible(appStore.isLoading)
             ],
           ));

@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:orex/components/slider_components.dart';
+import 'package:orex/screens/filter_category.dart';
+import 'package:orex/screens/home_screen.dart';
+import 'package:orex/utils/images.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
 import '../extensions/extension_util/context_extensions.dart';
 import '../extensions/extension_util/string_extensions.dart';
 import '../extensions/extension_util/widget_extensions.dart';
@@ -25,12 +30,9 @@ class CategoryScreen extends StatefulWidget {
 
 class _CategoryScreenState extends State<CategoryScreen> {
   List<CategoryData> categoryData = [];
-
   int page = 1;
   int? numPage;
-
   bool isLastPage = false;
-
   ScrollController scrollController = ScrollController();
 
   @override
@@ -38,7 +40,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
     super.initState();
     init();
     scrollController.addListener(() {
-      if (scrollController.position.pixels == scrollController.position.maxScrollExtent && !appStore.isLoading) {
+      if (scrollController.position.pixels ==
+              scrollController.position.maxScrollExtent &&
+          !appStore.isLoading) {
         if (page < numPage!) {
           page++;
           init();
@@ -77,36 +81,139 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: appBarWidget(language.category, context1: context, titleSpace: 16, showBack: false),
-        body: Stack(
-          children: [
-            categoryData.isNotEmpty
-                ? SingleChildScrollView(
-                    controller: scrollController,
-                    child: AnimatedWrap(
+      appBar: AppBar(
+        leading: Image.asset(
+          ic_logo,
+          height: 40,
+          width: 40,
+        ).paddingOnly(left: 16, top: 8, bottom: 8),
+        title: Text(language.category),
+        centerTitle: true,
+      ),
+      body: Stack(
+        children: [
+          categoryData.isNotEmpty
+              ? SingleChildScrollView(
+                  controller: scrollController,
+                  child: Column(
+                    children: [
+                      if (data!.slider!.isNotEmpty)
+                        SlidesComponents(data: data!.slider),
+                      const SizedBox(height: 16),
+                      AnimatedWrap(
                         runSpacing: 16,
                         spacing: 16,
                         children: List.generate(categoryData.length, (i) {
-                          return Container(
-                              width: (context.width() - 50) / 2,
-                              child: Stack(children: [
-                                cachedImage(categoryData[i].categoryImage, height: context.height() * 0.27, width: (context.width() - 50) / 2, fit: BoxFit.cover).cornerRadiusWithClipRRect(12),
-                                Positioned(
-                                    bottom: 10,
-                                    left: 10,
-                                    right: 10,
-                                    child: Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                        decoration: boxDecorationWithRoundedCorners(borderRadius: radius(8), backgroundColor: appStore.isDarkModeOn ? cardDarkColor : primaryExtraLight),
-                                        child: Text(categoryData[i].name.toString().capitalizeFirstLetter(), style: primaryTextStyle(), maxLines: 2, textAlign: TextAlign.center).center())),
-                              ]).onTap(() {
-                                CategorySelectedScreen(categoryId: categoryData[i].id, categoryName: categoryData[i].name.toString()).launch(context);
-                              }));
-                        })).paddingSymmetric(horizontal: 16).paddingBottom(20),
-                  )
-                : NoDataScreen(mTitle: language.resultNotFound).visible(!appStore.isLoading),
-            Loader().center().visible(appStore.isLoading)
+                          return buildCategoryItem(categoryData[i]);
+                        }),
+                      ),
+                    ],
+                  ).paddingSymmetric(horizontal: 16).paddingBottom(20),
+                )
+              : appStore.isLoading
+                  ? buildShimmerEffect()
+                  : NoDataScreen(mTitle: language.resultNotFound)
+                      .visible(!appStore.isLoading),
+        ],
+      ),
+    );
+  }
+
+  Widget buildCategoryItem(CategoryData category) {
+    return GestureDetector(
+      onTap: () {
+        FilterCategory(
+          categoryId: category.id,
+          categoryName: category.name.toString(),
+        ).launch(context);
+        // CategorySelectedScreen(
+        //   categoryId: category.id,
+        //   categoryName: category.name.toString(),
+        // ).launch(context);
+      },
+      child: Container(
+        width: double.infinity,
+        padding: EdgeInsets.all(16),
+        decoration: boxDecorationWithRoundedCorners(
+          borderRadius: radius(12),
+          backgroundColor:
+              appStore.isDarkModeOn ? cardDarkColor : Color(0xffE9E9E9),
+        ),
+        child: Row(
+          children: [
+            cachedImage(
+              category.categoryImage,
+              height: 25,
+              width: 25,
+              fit: BoxFit.cover,
+            ).cornerRadiusWithClipRRect(12),
+            SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                category.name.toString().capitalizeFirstLetter(),
+                style: primaryTextStyle(size: 16, color: black),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Spacer(),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: appStore.isDarkModeOn ? Colors.white : black,
+            ),
           ],
-        ));
+        ),
+      ),
+    );
+  }
+
+  Widget buildShimmerEffect() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Shimmer(
+              duration: const Duration(seconds: 2), // Adjust shimmer duration
+              interval: const Duration(
+                  seconds: 1), // Adjust interval between animations
+              color: Colors.grey.shade300,
+              enabled: true,
+              child: Container(
+                width: double.infinity,
+                height: 200,
+                margin: EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+            Column(
+              children: List.generate(6, (index) {
+                return Shimmer(
+                  duration:
+                      const Duration(seconds: 2), // Adjust shimmer duration
+                  interval: const Duration(
+                      seconds: 1), // Adjust interval between animations
+                  color: Colors.grey.shade300,
+                  enabled: true,
+                  child: Container(
+                    width: double.infinity,
+                    height: 80,
+                    margin: EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
