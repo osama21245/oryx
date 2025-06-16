@@ -22,8 +22,8 @@ import 'category_selected_screen.dart';
 import 'no_data_screen.dart';
 
 class CategoryScreen extends StatefulWidget {
-  const CategoryScreen({super.key});
-
+  final int? transactionType;
+  const CategoryScreen({super.key, this.transactionType});
   @override
   State<CategoryScreen> createState() => _CategoryScreenState();
 }
@@ -125,6 +125,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
         FilterCategory(
           categoryId: category.id,
           categoryName: category.name.toString(),
+          transactionType: widget.transactionType,
         ).launch(context);
         // CategorySelectedScreen(
         //   categoryId: category.id,

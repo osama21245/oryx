@@ -28,7 +28,8 @@ import 'home_screen.dart';
 import 'limit_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
-  DashboardScreen({super.key});
+  final int? transactionType;
+  DashboardScreen({super.key, this.transactionType});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -44,7 +45,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    tabs = [HomeScreen(), CategoryScreen(), FavouriteScreen(), ProfileScreen()];
+    tabs = [
+      HomeScreen(),
+      CategoryScreen(
+        transactionType: widget.transactionType,
+      ),
+      FavouriteScreen(),
+      ProfileScreen()
+    ];
     OneSignal.User.pushSubscription.optIn();
     init();
   }
@@ -52,7 +60,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void init() async {
     PlatformDispatcher.instance.onPlatformBrightnessChanged = () {
       if (getIntAsync(THEME_MODE_INDEX) == ThemeModeSystem) {
-        appStore.setDarkMode(MediaQuery.of(context).platformBrightness == Brightness.light);
+        appStore.setDarkMode(
+            MediaQuery.of(context).platformBrightness == Brightness.light);
       }
     };
     getSettingList();
@@ -65,7 +74,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> getSettingList() async {
     await getSettingApi().then((value) {
       userStore.setCurrencyCodeID(value.currencySetting!.symbol.validate());
-      userStore.setCurrencyPositionID(value.currencySetting!.position.validate());
+      userStore
+          .setCurrencyPositionID(value.currencySetting!.position.validate());
 
       userStore.setCurrencyCode(value.currencySetting!.code.validate());
       for (int i = 0; i < value.data!.length; i++) {
@@ -100,7 +110,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             }
           case "ADMOB_InterstitialIdIos":
             {
-              userStore.setAdmobInterstitialIdIos(value.data![i].value.validate());
+              userStore
+                  .setAdmobInterstitialIdIos(value.data![i].value.validate());
             }
           case "subscription_system":
             {
@@ -123,7 +134,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   void didChangeDependencies() {
-    if (getIntAsync(THEME_MODE_INDEX) == ThemeModeSystem) appStore.setDarkMode(MediaQuery.of(context).platformBrightness == Brightness.dark);
+    if (getIntAsync(THEME_MODE_INDEX) == ThemeModeSystem)
+      appStore.setDarkMode(
+          MediaQuery.of(context).platformBrightness == Brightness.dark);
     setState(() {});
     super.didChangeDependencies();
   }
@@ -136,7 +149,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
       },
       child: Scaffold(
         body: DoublePressBackWidget(
-          child: AnimatedContainer(color: context.cardColor, duration: const Duration(seconds: 1), child: tabs[currentIndex]
+          child: AnimatedContainer(
+              color: context.cardColor,
+              duration: const Duration(seconds: 1),
+              child: tabs[currentIndex]
               // IndexedStack(index: currentIndex, children: tabs
               ),
         ),
@@ -146,7 +162,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           onPressed: () {
             userStore.subscription == "1"
                 ? userStore.isSubscribe != 0
-                    ? userStore.subscriptionDetail!.subscriptionPlan!.packageData!.addProperty == 0
+                    ? userStore.subscriptionDetail!.subscriptionPlan!
+                                .packageData!.addProperty ==
+                            0
                         ? showDialog(
                             context: context,
                             builder: (context) {
@@ -154,7 +172,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   ? LimitExceedDialog(
                                       onTap: () {
                                         finish(context);
-                                        LimitScreen(limit: "add_property").launch(context);
+                                        LimitScreen(limit: "add_property")
+                                            .launch(context);
                                       },
                                     )
                                   : AddPropertyDialog();
@@ -177,8 +196,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: StylishBottomBar(
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12)),
-          backgroundColor: appStore.isDarkModeOn ? cardDarkColor : primaryVariant,
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(12), topRight: Radius.circular(12)),
+          backgroundColor:
+              appStore.isDarkModeOn ? cardDarkColor : primaryVariant,
           option: AnimatedBarOptions(iconStyle: IconStyle.Default),
           currentIndex: currentIndex,
           hasNotch: true,
@@ -189,23 +210,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
           },
           items: [
             BottomBarItem(
-              icon: Image.asset(ic_home, height: 24, width: 24,color: primaryColor),
-              selectedIcon: Image.asset(ic_home_fill, height: 24, width: 24,color: primaryColor),
+              icon: Image.asset(ic_home,
+                  height: 24, width: 24, color: primaryColor),
+              selectedIcon: Image.asset(ic_home_fill,
+                  height: 24, width: 24, color: primaryColor),
               title: SizedBox(),
             ),
             BottomBarItem(
-              icon: Image.asset(ic_category, height: 24, width: 24,color: primaryColor),
-              selectedIcon: Image.asset(ic_category_fill, height: 24, width: 24,color: primaryColor),
+              icon: Image.asset(ic_category,
+                  height: 24, width: 24, color: primaryColor),
+              selectedIcon: Image.asset(ic_category_fill,
+                  height: 24, width: 24, color: primaryColor),
               title: SizedBox(),
             ),
             BottomBarItem(
-              icon: Image.asset(ic_favorite, height: 24, width: 24,color: primaryColor),
-              selectedIcon: Image.asset(ic_favorite_fill, height: 24, width: 24,color: primaryColor),
+              icon: Image.asset(ic_favorite,
+                  height: 24, width: 24, color: primaryColor),
+              selectedIcon: Image.asset(ic_favorite_fill,
+                  height: 24, width: 24, color: primaryColor),
               title: SizedBox(),
             ),
             BottomBarItem(
-              icon: Image.asset(ic_profile, height: 24, width: 24,color: primaryColor),
-              selectedIcon: Image.asset(ic_profile_fill, height: 24, width: 24,color: primaryColor),
+              icon: Image.asset(ic_profile,
+                  height: 24, width: 24, color: primaryColor),
+              selectedIcon: Image.asset(ic_profile_fill,
+                  height: 24, width: 24, color: primaryColor),
               title: SizedBox(),
             ),
           ],

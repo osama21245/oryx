@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
@@ -24,7 +25,8 @@ Map<String, String> buildHeaderTokens() {
   };
 
   if (appStore.isLoggedIn) {
-    header.putIfAbsent(HttpHeaders.authorizationHeader, () => 'Bearer ${userStore.token}');
+    header.putIfAbsent(
+        HttpHeaders.authorizationHeader, () => 'Bearer ${userStore.token}');
   }
   log(jsonEncode(header));
   return header;
@@ -38,24 +40,33 @@ Uri buildBaseUrl(String endPoint) {
   return url;
 }
 
-Future<Response> buildHttpResponse(String endPoint, {HttpMethod method = HttpMethod.GET, Map? request, String? req}) async {
+Future<Response> buildHttpResponse(String endPoint,
+    {HttpMethod method = HttpMethod.GET, Map? request, String? req}) async {
   if (await isNetworkAvailable()) {
     var headers = buildHeaderTokens();
     Uri url = buildBaseUrl(endPoint);
-
+    if (kDebugMode) {
+      print('URL: ${url.toString()} Method: $method');
+    }
     try {
       Response response;
 
       if (method == HttpMethod.POST) {
         log('Request: $request');
 
-        response = await http.post(url, body: req ?? jsonEncode(request), headers: headers).timeout(Duration(seconds: 20), onTimeout: () => throw 'Timeout');
+        response = await http
+            .post(url, body: req ?? jsonEncode(request), headers: headers)
+            .timeout(Duration(seconds: 20), onTimeout: () => throw 'Timeout');
       } else if (method == HttpMethod.DELETE) {
-        response = await delete(url, headers: headers).timeout(Duration(seconds: 20), onTimeout: () => throw 'Timeout');
+        response = await delete(url, headers: headers)
+            .timeout(Duration(seconds: 20), onTimeout: () => throw 'Timeout');
       } else if (method == HttpMethod.PUT) {
-        response = await put(url, body: req ?? jsonEncode(request), headers: headers).timeout(Duration(seconds: 20), onTimeout: () => throw 'Timeout');
+        response = await put(url,
+                body: req ?? jsonEncode(request), headers: headers)
+            .timeout(Duration(seconds: 20), onTimeout: () => throw 'Timeout');
       } else {
-        response = await get(url, headers: headers).timeout(Duration(seconds: 20), onTimeout: () => throw 'Timeout');
+        response = await get(url, headers: headers)
+            .timeout(Duration(seconds: 20), onTimeout: () => throw 'Timeout');
       }
 
       log('Response ($method): ${url.toString()} ${response.statusCode} ${response.body}');
@@ -189,15 +200,17 @@ Future<String?> isJsonValid(json) async {
 //   if (Navigator.canPop(getContext)) Navigator.pop(getContext, object);
 // }
 
-
-Future<MultipartRequest> getMultiPartRequest(String endPoint, {String? baseUrl}) async {
+Future<MultipartRequest> getMultiPartRequest(String endPoint,
+    {String? baseUrl}) async {
   String url = '${baseUrl ?? buildBaseUrl(endPoint).toString()}';
   log(url);
   return MultipartRequest('POST', Uri.parse(url));
 }
 
-Future<void> sendMultiPartRequest(MultipartRequest multiPartRequest, {Function(dynamic)? onSuccess, Function(dynamic)? onError}) async {
-  http.Response response = await http.Response.fromStream(await multiPartRequest.send());
+Future<void> sendMultiPartRequest(MultipartRequest multiPartRequest,
+    {Function(dynamic)? onSuccess, Function(dynamic)? onError}) async {
+  http.Response response =
+      await http.Response.fromStream(await multiPartRequest.send());
   print("Result:${response.statusCode} ${response.body}");
 
   if (response.statusCode.isSuccessful()) {
@@ -206,7 +219,6 @@ Future<void> sendMultiPartRequest(MultipartRequest multiPartRequest, {Function(d
     onError?.call(errorSomethingWentWrong);
   }
 }
-
 
 /// returns true if network is available
 Future<bool> isNetworkAvailable() async {

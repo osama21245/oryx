@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
+import 'package:orex/models/filter_category_model.dart';
 
 import '../extensions/extension_util/int_extensions.dart';
 import '../extensions/extension_util/string_extensions.dart';
@@ -45,13 +47,18 @@ import '../utils/constants.dart';
 import 'network_utills.dart';
 
 Future<SignUpResponse> signUpApi(Map request, BuildContext context) async {
-  Response response = await buildHttpResponse('register', request: request, method: HttpMethod.POST);
+  Response response = await buildHttpResponse('register',
+      request: request, method: HttpMethod.POST);
   if (!response.statusCode.isSuccessful()) {
     await appStore.setLogin(true);
     await setValue(IS_USER_SIGNUP, true);
     if (response.body.isJson()) {
+      if (kDebugMode) {
+        print('aaaaaaaaaaaaaaaaaaaa${response.body}');
+      }
       var json = jsonDecode(response.body);
-      if (json.containsKey('code') && json['code'].toString().contains('invalid_username')) {
+      if (json.containsKey('code') &&
+          json['code'].toString().contains('invalid_username')) {
         await appStore.setLogin(false);
 
         throw 'invalid_username';
@@ -78,11 +85,13 @@ Future<SignUpResponse> signUpApi(Map request, BuildContext context) async {
 }
 
 Future<SocialLoginResponse> otpLogInApi(Map request) async {
-  Response response = await buildHttpResponse('social-otp-login', request: request, method: HttpMethod.POST);
+  Response response = await buildHttpResponse('social-otp-login',
+      request: request, method: HttpMethod.POST);
   if (!(response.statusCode >= 200 && response.statusCode <= 206)) {
     if (response.body.isJson()) {
       var json = jsonDecode(response.body);
-      if (json.containsKey('code') && json['code'].toString().contains('invalid_username')) {
+      if (json.containsKey('code') &&
+          json['code'].toString().contains('invalid_username')) {
         throw 'invalid_username';
       }
     }
@@ -101,16 +110,24 @@ Future<SocialLoginResponse> otpLogInApi(Map request) async {
 
 ///property type list
 Future<PropertyTypeResponse> getPropertyTypeList() async {
-  return PropertyTypeResponse.fromJson(await handleResponse(await buildHttpResponse('property-type-list', method: HttpMethod.GET)).then((value) => value));
+  return PropertyTypeResponse.fromJson(await handleResponse(
+          await buildHttpResponse('property-type-list', method: HttpMethod.GET))
+      .then((value) => value));
 }
 
 /// Language Data
 Future<ServerLanguageResponse> getLanguageList(versionNo) async {
-  return ServerLanguageResponse.fromJson(await handleResponse(await buildHttpResponse('language-table-list?version_no=$versionNo', method: HttpMethod.GET)).then((value) => value));
+  return ServerLanguageResponse.fromJson(await handleResponse(
+          await buildHttpResponse('language-table-list?version_no=$versionNo',
+              method: HttpMethod.GET))
+      .then((value) => value));
 }
 
 Future<LogInResponse> updateProfileApi(Map req) async {
-  return LogInResponse.fromJson(await handleResponse(await buildHttpResponse('update-profile', request: req, method: HttpMethod.POST)));
+  return LogInResponse.fromJson(await handleResponse(await buildHttpResponse(
+      'update-profile',
+      request: req,
+      method: HttpMethod.POST)));
 }
 
 // Future<LogInResponse> updatePlayerIdApi(Map req) async {
@@ -118,179 +135,278 @@ Future<LogInResponse> updateProfileApi(Map req) async {
 // }
 
 Future<DashboardResponse> getDashBoardData(Map request) async {
-  return DashboardResponse.fromJson(await handleResponse(await buildHttpResponse('dashboard-list', request: request, method: HttpMethod.POST)).then((value) {
+  return DashboardResponse.fromJson(await handleResponse(
+          await buildHttpResponse('dashboard-list',
+              request: request, method: HttpMethod.POST))
+      .then((value) {
     print("Dashboard Response: $value");
-    return value;}));
+    return value;
+  }));
 }
 
 Future<ViewPropertyResponse> getPropertiesView(int id) async {
-  return ViewPropertyResponse.fromJson(await handleResponse(await buildHttpResponse('property-view?id=$id', method: HttpMethod.POST)).then((value) => value));
+  return ViewPropertyResponse.fromJson(await handleResponse(
+          await buildHttpResponse('property-view?id=$id',
+              method: HttpMethod.POST))
+      .then((value) => value));
 }
 
 Future<FilterResponse> filterApi(Map request, {int? page = 1}) async {
-  return FilterResponse.fromJson(await handleResponse(await buildHttpResponse('filter-property-list?page=$page', request: request, method: HttpMethod.POST)).then((value) => value));
+  return FilterResponse.fromJson(await handleResponse(await buildHttpResponse(
+          'filter-property-list?page=$page',
+          request: request,
+          method: HttpMethod.POST))
+      .then((value) => value));
+}
+
+Future<List<FilterCategoryModel>> getFilterCategoryApi(int categoryId) async {
+  final response = await handleResponse(
+    await buildHttpResponse('filter=$categoryId', method: HttpMethod.GET),
+  );
+
+  if (response is List) {
+    return response.map((item) => FilterCategoryModel.fromJson(item)).toList();
+  } else {
+    throw Exception("Unexpected response format");
+  }
 }
 
 /// Category Api
 Future<CategoryListModel> getCategory({int? page = 1}) async {
-  return CategoryListModel.fromJson(await handleResponse(await buildHttpResponse('category-list?page=$page', method: HttpMethod.GET)).then((value) => value));
+  return CategoryListModel.fromJson(await handleResponse(
+          await buildHttpResponse('category-list?page=$page',
+              method: HttpMethod.GET))
+      .then((value) => value));
 }
 
 /// PropertyList Api
 Future<PropertyListModel> getProperty() async {
-  return PropertyListModel.fromJson(await handleResponse(await buildHttpResponse('property-list', method: HttpMethod.GET)).then((value) => value));
+  return PropertyListModel.fromJson(await handleResponse(
+          await buildHttpResponse('property-list', method: HttpMethod.GET))
+      .then((value) => value));
 }
 
 /// property detail
 Future<PropertyDetailsModel> propertyDetails(Map request) async {
-  return PropertyDetailsModel.fromJson(await handleResponse(await buildHttpResponse('property-detail', request: request, method: HttpMethod.POST)).then((value) => value));
+  return PropertyDetailsModel.fromJson(await handleResponse(
+          await buildHttpResponse('property-detail',
+              request: request, method: HttpMethod.POST))
+      .then((value) => value));
 }
 
 ///Search Api
 Future<SearchResponse> searchProperty(Map request, {int page = 100}) async {
-  return SearchResponse.fromJson(await handleResponse(await buildHttpResponse('search-location?per_page=$page', request: request, method: HttpMethod.POST)).then((value) => value));
+  return SearchResponse.fromJson(await handleResponse(await buildHttpResponse(
+          'search-location?per_page=$page',
+          request: request,
+          method: HttpMethod.POST))
+      .then((value) => value));
 }
 
 ///article
 Future<ArticleResponse> getArticles({int? id, int? page}) async {
-  return ArticleResponse.fromJson(await (handleResponse(await buildHttpResponse("article-list?tags_id=$id&page=$page", method: HttpMethod.GET))));
+  return ArticleResponse.fromJson(await (handleResponse(await buildHttpResponse(
+      "article-list?tags_id=$id&page=$page",
+      method: HttpMethod.GET))));
 }
 
 /// subscription
 Future<SubscribePackageResponse> subscribePackageApi(Map req) async {
-  return SubscribePackageResponse.fromJson(await handleResponse(await buildHttpResponse('subscribe-package', request: req, method: HttpMethod.POST)));
+  return SubscribePackageResponse.fromJson(await handleResponse(
+      await buildHttpResponse('subscribe-package',
+          request: req, method: HttpMethod.POST)));
 }
 
 Future<SubscriptionResponse> getSubscription() async {
-  return SubscriptionResponse.fromJson(await (handleResponse(await buildHttpResponse("package-list", method: HttpMethod.GET))));
+  return SubscriptionResponse.fromJson(await (handleResponse(
+      await buildHttpResponse("package-list", method: HttpMethod.GET))));
 }
 
 Future<SubscriptionPlanResponse> getSubscriptionPlanList({int page = 2}) async {
-  return SubscriptionPlanResponse.fromJson(await (handleResponse(await buildHttpResponse("subscriptionplan-list?page=$page", method: HttpMethod.GET))));
+  return SubscriptionPlanResponse.fromJson(await (handleResponse(
+      await buildHttpResponse("subscriptionplan-list?page=$page",
+          method: HttpMethod.GET))));
 }
 
 Future<SubscribePackageResponse> cancelPlanApi(Map req) async {
-  return SubscribePackageResponse.fromJson(await handleResponse(await buildHttpResponse('cancel-subscription', request: req, method: HttpMethod.POST)));
+  return SubscribePackageResponse.fromJson(await handleResponse(
+      await buildHttpResponse('cancel-subscription',
+          request: req, method: HttpMethod.POST)));
 }
 
 /// payment
 Future<PaymentListModel> getPaymentApi() async {
-  return PaymentListModel.fromJson(await handleResponse(await buildHttpResponse('payment-gateway-list', method: HttpMethod.GET)));
+  return PaymentListModel.fromJson(await handleResponse(
+      await buildHttpResponse('payment-gateway-list', method: HttpMethod.GET)));
 }
 
 /// Favourite Property Api
 Future<FavouritePropertyModel> getFavouriteProperty(int page) async {
-  return FavouritePropertyModel.fromJson(await (handleResponse(await buildHttpResponse("get-favourite-property?page=$page", method: HttpMethod.GET))));
+  return FavouritePropertyModel.fromJson(await (handleResponse(
+      await buildHttpResponse("get-favourite-property?page=$page",
+          method: HttpMethod.GET))));
 }
 
 /// Set Favourite Property
 Future<EPropertyBaseResponse> setFavouriteProperty(Map request) async {
-  return EPropertyBaseResponse.fromJson(await (handleResponse(await buildHttpResponse("set-favourite-property", request: request, method: HttpMethod.POST))));
+  return EPropertyBaseResponse.fromJson(await (handleResponse(
+      await buildHttpResponse("set-favourite-property",
+          request: request, method: HttpMethod.POST))));
 }
 
 ///User Detail
 Future<UserResponse> getUserDataApi({int? id}) async {
-  return UserResponse.fromJson(await (handleResponse(await buildHttpResponse("user-detail?id=$id", method: HttpMethod.GET))));
+  return UserResponse.fromJson(await (handleResponse(
+      await buildHttpResponse("user-detail?id=$id", method: HttpMethod.GET))));
 }
 
 ///get AppSetting
 Future<AppSettingResponse> getAppSettingApi() async {
-  return AppSettingResponse.fromJson(await handleResponse(await buildHttpResponse('appsetting', method: HttpMethod.GET)));
+  return AppSettingResponse.fromJson(await handleResponse(
+      await buildHttpResponse('appsetting', method: HttpMethod.GET)));
 }
 
 ///get setting
 Future<GetSettingResponse> getSettingApi() async {
-  return GetSettingResponse.fromJson(await handleResponse(await buildHttpResponse('get-setting', method: HttpMethod.GET)));
+  return GetSettingResponse.fromJson(await handleResponse(
+      await buildHttpResponse('get-setting', method: HttpMethod.GET)));
 }
 
 ///Notification
 Future<NotificationResponse> notificationDetailsApi(String? id) async {
-  return NotificationResponse.fromJson(await handleResponse(await buildHttpResponse('notification-detail?id=$id', method: HttpMethod.GET)));
+  return NotificationResponse.fromJson(await handleResponse(
+      await buildHttpResponse('notification-detail?id=$id',
+          method: HttpMethod.GET)));
 }
 
 Future<NotificationResponse> notificationListApi(Map request) async {
-  return NotificationResponse.fromJson(await handleResponse(await buildHttpResponse('notification-list', request: request, method: HttpMethod.POST)));
+  return NotificationResponse.fromJson(await handleResponse(
+      await buildHttpResponse('notification-list',
+          request: request, method: HttpMethod.POST)));
 }
 
 /// Property Add
 
 Future<EPropertyBaseResponse> addProperty(Map request) async {
-  return EPropertyBaseResponse.fromJson(await handleResponse(await buildHttpResponse('property-save', request: request, method: HttpMethod.POST)));
+  return EPropertyBaseResponse.fromJson(await handleResponse(
+      await buildHttpResponse('property-save',
+          request: request, method: HttpMethod.POST)));
 }
 
 ///Delete User
 Future<EPropertyBaseResponse> deleteUserAccountApi() async {
-  return EPropertyBaseResponse.fromJson(await handleResponse(await buildHttpResponse('delete-user-account', method: HttpMethod.POST)));
+  return EPropertyBaseResponse.fromJson(await handleResponse(
+      await buildHttpResponse('delete-user-account', method: HttpMethod.POST)));
 }
 
 ///My Properties
 Future<MyPropertiesResponseModel> getMyPropertiesApi({int? currentPage}) async {
-  return MyPropertiesResponseModel.fromJson(await handleResponse(await buildHttpResponse('my-property?page=$currentPage', method: HttpMethod.GET)));
+  return MyPropertiesResponseModel.fromJson(await handleResponse(
+      await buildHttpResponse('my-property?page=$currentPage',
+          method: HttpMethod.GET)));
 }
 
 ///inquiry for other property
 Future<PropertyInquiryResponse> getPropertyInquiryApi() async {
-  return PropertyInquiryResponse.fromJson(await handleResponse(await buildHttpResponse('user-inquiry-property', method: HttpMethod.GET)));
+  return PropertyInquiryResponse.fromJson(await handleResponse(
+      await buildHttpResponse('user-inquiry-property',
+          method: HttpMethod.GET)));
 }
 
 ///my advertisement property
 Future<MyAdvertisementPropertyResponse> getMyAdvertisementApi(int page) async {
-  return MyAdvertisementPropertyResponse.fromJson(await handleResponse(await buildHttpResponse('get-my-advertisement-property', method: HttpMethod.GET)));
+  return MyAdvertisementPropertyResponse.fromJson(await handleResponse(
+      await buildHttpResponse('get-my-advertisement-property',
+          method: HttpMethod.GET)));
 }
 
 ///my own property history
 Future<MyAdvertisementPropertyResponse> getMyOwnPropertyApi(int page) async {
-  return MyAdvertisementPropertyResponse.fromJson(await handleResponse(await buildHttpResponse('my-property?page=$page', method: HttpMethod.GET)));
+  return MyAdvertisementPropertyResponse.fromJson(await handleResponse(
+      await buildHttpResponse('my-property?page=$page',
+          method: HttpMethod.GET)));
 }
 
 ///set as advertisement
 Future<PropertyDetailsModel> setPropertyAdvertisement(Map request) async {
-  return PropertyDetailsModel.fromJson(await (handleResponse(await buildHttpResponse("set-property-advertisement", request: request, method: HttpMethod.POST))));
+  return PropertyDetailsModel.fromJson(await (handleResponse(
+      await buildHttpResponse("set-property-advertisement",
+          request: request, method: HttpMethod.POST))));
 }
 
 ///who contact_info
-Future<PropertyContactInfoResponse> getWhoInquiredMyPropertyUserListApi(int? page) async {
-  return PropertyContactInfoResponse.fromJson(await handleResponse(await buildHttpResponse('who-inquired-my-property-user-list?page=$page', method: HttpMethod.GET)));
+Future<PropertyContactInfoResponse> getWhoInquiredMyPropertyUserListApi(
+    int? page) async {
+  return PropertyContactInfoResponse.fromJson(await handleResponse(
+      await buildHttpResponse('who-inquired-my-property-user-list?page=$page',
+          method: HttpMethod.GET)));
 }
 
 ///contact info details
-Future<ContactInfoDetailsResponse> getWhoInquiredMyPropertyUserDetailsListApi(int? id) async {
-  return ContactInfoDetailsResponse.fromJson(await handleResponse(await buildHttpResponse('who-inquired-my-property?customer_id=$id', method: HttpMethod.GET)).then((value) => value));
+Future<ContactInfoDetailsResponse> getWhoInquiredMyPropertyUserDetailsListApi(
+    int? id) async {
+  return ContactInfoDetailsResponse.fromJson(await handleResponse(
+          await buildHttpResponse('who-inquired-my-property?customer_id=$id',
+              method: HttpMethod.GET))
+      .then((value) => value));
 }
 
 ///save property history
 Future<PropertyDetailsModel> savePropertyHistory(Map req) async {
-  return PropertyDetailsModel.fromJson(await handleResponse(await buildHttpResponse('inquiry-for-property', request: req, method: HttpMethod.POST)).then((value) => value));
+  return PropertyDetailsModel.fromJson(await handleResponse(
+          await buildHttpResponse('inquiry-for-property',
+              request: req, method: HttpMethod.POST))
+      .then((value) => value));
 }
 
 ///extra property limit
-Future<LimitPropertyResponse> getExtraPropertyLimit(String? propertyType) async {
-  return LimitPropertyResponse.fromJson(await handleResponse(await buildHttpResponse('extra-property-limit-list?type=$propertyType', method: HttpMethod.GET)).then((value) => value));
+Future<LimitPropertyResponse> getExtraPropertyLimit(
+    String? propertyType) async {
+  return LimitPropertyResponse.fromJson(await handleResponse(
+          await buildHttpResponse(
+              'extra-property-limit-list?type=$propertyType',
+              method: HttpMethod.GET))
+      .then((value) => value));
 }
 
 ///near by property
 Future<PropertyListModel> getNearByProperty(Map request, {int? page}) async {
-  return PropertyListModel.fromJson(await handleResponse(await buildHttpResponse('nearby-property-list?page=$page', request: request, method: HttpMethod.POST)).then((value) => value));
+  return PropertyListModel.fromJson(await handleResponse(
+          await buildHttpResponse('nearby-property-list?page=$page',
+              request: request, method: HttpMethod.POST))
+      .then((value) => value));
 }
 
 ///advertisement
 Future<PropertyListModel> getAdvertisementList(String? city) async {
-  return PropertyListModel.fromJson(await handleResponse(await buildHttpResponse('get-others-advertisement-property?city=$city', method: HttpMethod.GET)).then((value) => value));
+  return PropertyListModel.fromJson(await handleResponse(
+          await buildHttpResponse(
+              'get-others-advertisement-property?city=$city',
+              method: HttpMethod.GET))
+      .then((value) => value));
 }
 
 ///property update
 Future<PropertyListModel> updatePropertyDetail(Map request) async {
-  return PropertyListModel.fromJson(await handleResponse(await buildHttpResponse('property-update', request: request, method: HttpMethod.POST)).then((value) => value));
+  return PropertyListModel.fromJson(await handleResponse(
+          await buildHttpResponse('property-update',
+              request: request, method: HttpMethod.POST))
+      .then((value) => value));
 }
 
 ///delete property
 Future<EPropertyBaseResponse> deleteProperty(int? id) async {
-  return EPropertyBaseResponse.fromJson(await handleResponse(await buildHttpResponse('property-delete/$id', method: HttpMethod.POST)).then((value) => value));
+  return EPropertyBaseResponse.fromJson(await handleResponse(
+          await buildHttpResponse('property-delete/$id',
+              method: HttpMethod.POST))
+      .then((value) => value));
 }
 
 /// Purchase extra Limit add Property
 Future<PurchaseExtraLimitResponse> purchaseExtraLimitApi(Map req) async {
-  return PurchaseExtraLimitResponse.fromJson(await handleResponse(await buildHttpResponse('purchase-extra-property-limit', request: req, method: HttpMethod.POST)));
+  return PurchaseExtraLimitResponse.fromJson(await handleResponse(
+      await buildHttpResponse('purchase-extra-property-limit',
+          request: req, method: HttpMethod.POST)));
 }
 
 ///DeleteUserFirebase
