@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:orex/extensions/extension_util/widget_extensions.dart';
 import 'package:orex/screens/choose_transaction_type_screen.dart';
@@ -105,9 +106,9 @@ class _MainScreenState extends State<MainScreen> {
                   .onTap(() async {
                 selectedCity = data!.propertyCity![index].name.toString();
                 selectCityName = selectedCity;
-                userStore.setUserCity(selectCityName!);
-
-                ChooseTransactionTypeScreen().launch(context, isNewTask: true);
+                userStore.setUserCity(selectCityName!).then((value) =>
+                    ChooseTransactionTypeScreen()
+                        .launch(context, isNewTask: true));
 
                 // DashboardScreen().launch(context, isNewTask: true);
               }),
@@ -125,7 +126,7 @@ class _MainScreenState extends State<MainScreen> {
           // ),
           // Text(language.fetchingYourCurrentLocation, style: secondaryTextStyle(color: primaryColor))
         ],
-      ).visible(userStore.cityName.isEmpty).center(),
+      ).center(),
     );
   }
 }

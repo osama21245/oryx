@@ -675,84 +675,84 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                   label: language.enterPropertyName),
             ),
             20.height,
-            RequiredValidationText(
-                required: true, titleText: language.selectBHK),
-            10.height,
-            HorizontalList(
-              itemCount: bhkList.length,
-              itemBuilder: (BuildContext context, int i) {
-                return Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
-                  decoration: boxDecorationWithRoundedCorners(
-                      borderRadius: BorderRadius.circular(8.0),
-                      backgroundColor: selectedBhkIndex == bhkList[i].toInt()
-                          ? primaryColor
-                          : appStore.isDarkModeOn
-                              ? cardDarkColor
-                              : primaryExtraLight),
-                  child: Text(bhkList[i].toString() + " " + language.bhk,
-                          style: primaryTextStyle(
-                              color: selectedBhkIndex == bhkList[i].toInt()
-                                  ? Colors.white
-                                  : grayColor))
-                      .center(),
-                ).onTap(() {
-                  selectedBhkIndex = bhkList[i].toInt();
-                  setState(() {});
-                });
-              },
-            ),
-            20.height,
-            RequiredValidationText(
-                required: true, titleText: language.furnishType),
-            10.height,
-            DropdownButtonFormField(
-              hint:
-                  Text(language.selectFurnishedType, style: primaryTextStyle()),
-              items: furnishedTypeList
-                  .map((value) => DropdownMenuItem<String>(
-                      child: Text(value, style: primaryTextStyle()),
-                      value: value))
-                  .toList(),
-              isExpanded: false,
-              isDense: true,
-              borderRadius: radius(),
-              decoration: defaultInputDecoration(context),
-              value: furnishedType == 0
-                  ? UNFURNISHED
-                  : furnishedType == 1
-                      ? FULLY
-                      : furnishedType == 2
-                          ? SEMI
-                          : mFurnishedType,
-              onChanged: (String? value) {
-                mFurnishedType = value.validate();
+            // RequiredValidationText(
+            //     required: true, titleText: language.selectBHK),
+            // 10.height,
+            // HorizontalList(
+            //   itemCount: bhkList.length,
+            //   itemBuilder: (BuildContext context, int i) {
+            //     return Container(
+            //       padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+            //       decoration: boxDecorationWithRoundedCorners(
+            //           borderRadius: BorderRadius.circular(8.0),
+            //           backgroundColor: selectedBhkIndex == bhkList[i].toInt()
+            //               ? primaryColor
+            //               : appStore.isDarkModeOn
+            //                   ? cardDarkColor
+            //                   : primaryExtraLight),
+            //       child: Text(bhkList[i].toString() + " " + language.bhk,
+            //               style: primaryTextStyle(
+            //                   color: selectedBhkIndex == bhkList[i].toInt()
+            //                       ? Colors.white
+            //                       : grayColor))
+            //           .center(),
+            //     ).onTap(() {
+            //       selectedBhkIndex = bhkList[i].toInt();
+            //       setState(() {});
+            //     });
+            //   },
+            // ),
+            // 20.height,
+            // RequiredValidationText(
+            //     required: true, titleText: language.furnishType),
+            // 10.height,
+            // DropdownButtonFormField(
+            //   hint:
+            //       Text(language.selectFurnishedType, style: primaryTextStyle()),
+            //   items: furnishedTypeList
+            //       .map((value) => DropdownMenuItem<String>(
+            //           child: Text(value, style: primaryTextStyle()),
+            //           value: value))
+            //       .toList(),
+            //   isExpanded: false,
+            //   isDense: true,
+            //   borderRadius: radius(),
+            //   decoration: defaultInputDecoration(context),
+            //   value: furnishedType == 0
+            //       ? UNFURNISHED
+            //       : furnishedType == 1
+            //           ? FULLY
+            //           : furnishedType == 2
+            //               ? SEMI
+            //               : mFurnishedType,
+            //   onChanged: (String? value) {
+            //     mFurnishedType = value.validate();
 
-                if (mFurnishedType == UNFURNISHED) {
-                  furnishedType = 0;
-                } else if (mFurnishedType == FULLY) {
-                  furnishedType = 1;
-                } else {
-                  furnishedType = 2;
-                }
-                setState(() {});
-              },
-            ),
-            20.height,
-            RequiredValidationText(
-                required: true, titleText: language.squareFeetArea),
-            10.height,
-            AppTextField(
-              isValidationRequired: true,
-              textInputAction: TextInputAction.go,
-              controller: areaController,
-              focus: areaCFocus,
-              textFieldType: TextFieldType.NAME,
-              keyboardType: TextInputType.name,
-              decoration: defaultInputDecoration(context,
-                  label: language.enterSquareFeetArea),
-            ),
-            20.height,
+            //     if (mFurnishedType == UNFURNISHED) {
+            //       furnishedType = 0;
+            //     } else if (mFurnishedType == FULLY) {
+            //       furnishedType = 1;
+            //     } else {
+            //       furnishedType = 2;
+            //     }
+            //     setState(() {});
+            //   },
+            // ),
+            // 20.height,
+            // RequiredValidationText(
+            //     required: true, titleText: language.squareFeetArea),
+            // 10.height,
+            // AppTextField(
+            //   isValidationRequired: true,
+            //   textInputAction: TextInputAction.go,
+            //   controller: areaController,
+            //   focus: areaCFocus,
+            //   textFieldType: TextFieldType.NAME,
+            //   keyboardType: TextInputType.name,
+            //   decoration: defaultInputDecoration(context,
+            //       label: language.enterSquareFeetArea),
+            // ),
+            // 20.height,
             // RequiredValidationText(required: true, titleText: language.ageOfProperty + language.year),
             // 10.height,
             // AppTextField(
@@ -797,13 +797,13 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                 onChangePriceField(value);
               },
             ),
-            20.height,
-            if (widget.propertyFor == 0 || widget.propertyFor == 2)
-              RequiredValidationText(
-                  required: true, titleText: language.priceDuration),
-            10
-                .height
-                .visible(widget.propertyFor == 0 || widget.propertyFor == 2),
+            // 20.height,
+            // if (widget.propertyFor == 0 || widget.propertyFor == 2)
+            // RequiredValidationText(
+            //     required: true, titleText: language.priceDuration),
+            // 10
+            //     .height
+            //     .visible(widget.propertyFor == 0 || widget.propertyFor == 2),
             // if (widget.propertyFor == 0 || widget.propertyFor == 2)
             //   DropdownButtonFormField(
             //     hint: Text(language.selectPriceDuration, style: primaryTextStyle()),
@@ -821,74 +821,74 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             //       setState(() {});
             //     },
             //   ).visible(widget.propertyFor == 0 || widget.propertyFor == 2),
-            if (widget.propertyFor == 0 || widget.propertyFor == 2)
-              DropdownButtonFormField<ABC>(
-                  hint: Text(language.selectPriceDuration,
-                      style: primaryTextStyle()),
-                  items: listTest
-                      .map((ABC testss) => DropdownMenuItem<ABC>(
-                          child: Text(testss.title.validate(),
-                              style: primaryTextStyle()),
-                          value: testss))
-                      .toList(),
-                  isExpanded: false,
-                  isDense: true,
-                  borderRadius: radius(),
-                  decoration: defaultInputDecoration(context),
-                  value: selectedValue,
-                  onChanged: (ABC? value) {
-                    selectedValue = value;
-                    priceDurationValue = value!.value.validate();
+            // if (widget.propertyFor == 0 || widget.propertyFor == 2)
+            //   DropdownButtonFormField<ABC>(
+            //       hint: Text(language.selectPriceDuration,
+            //           style: primaryTextStyle()),
+            //       items: listTest
+            //           .map((ABC testss) => DropdownMenuItem<ABC>(
+            //               child: Text(testss.title.validate(),
+            //                   style: primaryTextStyle()),
+            //               value: testss))
+            //           .toList(),
+            //       isExpanded: false,
+            //       isDense: true,
+            //       borderRadius: radius(),
+            //       decoration: defaultInputDecoration(context),
+            //       value: selectedValue,
+            //       onChanged: (ABC? value) {
+            //         selectedValue = value;
+            //         priceDurationValue = value!.value.validate();
 
-                    print(
-                        "Price Duration Value" + priceDurationValue.toString());
-                    print("Price Duration Value" + selectedValue.toString());
+            //         print(
+            //             "Price Duration Value" + priceDurationValue.toString());
+            //         print("Price Duration Value" + selectedValue.toString());
 
-                    setState(() {});
-                  }),
+            //         setState(() {});
+            //       }),
 
             20
                 .height
                 .visible(widget.propertyFor == 0 || widget.propertyFor == 2),
-            RequiredValidationText(
-                required: true, titleText: language.securityDeposit),
-            10.height,
-            AppTextField(
-              textInputAction: TextInputAction.go,
-              controller: depositController,
-              focus: depositFocus,
-              textFieldType: TextFieldType.NUMBER,
-              keyboardType: TextInputType.number,
-              decoration: defaultInputDecoration(context,
-                  label: language.enterSecurityDeposit),
-            ),
-            20.height,
-            RequiredValidationText(
-                required: true, titleText: language.brokerage),
-            10.height,
-            AppTextField(
-              textInputAction: TextInputAction.go,
-              controller: brokerageController,
-              focus: brokerageFocus,
-              textFieldType: TextFieldType.NUMBER,
-              keyboardType: TextInputType.number,
-              decoration: defaultInputDecoration(context,
-                  label: language.enterBrokerage),
-            ),
-            20.height,
-            RequiredValidationText(
-                required: true, titleText: language.maintenanceCharges),
-            10.height,
-            AppTextField(
-              textInputAction: TextInputAction.go,
-              controller: mChargesController,
-              focus: mChargesFocus,
-              textFieldType: TextFieldType.NUMBER,
-              keyboardType: TextInputType.number,
-              decoration: defaultInputDecoration(context,
-                  label: language.enterMaintenanceCharge),
-            ),
-            20.height,
+            // RequiredValidationText(
+            //     required: true, titleText: language.securityDeposit),
+            // 10.height,
+            // AppTextField(
+            //   textInputAction: TextInputAction.go,
+            //   controller: depositController,
+            //   focus: depositFocus,
+            //   textFieldType: TextFieldType.NUMBER,
+            //   keyboardType: TextInputType.number,
+            //   decoration: defaultInputDecoration(context,
+            //       label: language.enterSecurityDeposit),
+            // ),
+            // 20.height,
+            // RequiredValidationText(
+            //     required: true, titleText: language.brokerage),
+            // 10.height,
+            // AppTextField(
+            //   textInputAction: TextInputAction.go,
+            //   controller: brokerageController,
+            //   focus: brokerageFocus,
+            //   textFieldType: TextFieldType.NUMBER,
+            //   keyboardType: TextInputType.number,
+            //   decoration: defaultInputDecoration(context,
+            //       label: language.enterBrokerage),
+            // ),
+            // 20.height,
+            // RequiredValidationText(
+            //     required: true, titleText: language.maintenanceCharges),
+            // 10.height,
+            // AppTextField(
+            //   textInputAction: TextInputAction.go,
+            //   controller: mChargesController,
+            //   focus: mChargesFocus,
+            //   textFieldType: TextFieldType.NUMBER,
+            //   keyboardType: TextInputType.number,
+            //   decoration: defaultInputDecoration(context,
+            //       label: language.enterMaintenanceCharge),
+            // ),
+            // 20.height,
             // RequiredValidationText(required: true, titleText: language.address),
             // 10.height,
             // GestureDetector(
@@ -981,8 +981,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             //     }
             //   },
             // ),
-            citySelectionWidget(),
-            20.height,
+            // citySelectionWidget(),
+            // 20.height,
             RequiredValidationText(
                 required: false, titleText: language.addPicture),
             10.height,
@@ -1135,36 +1135,36 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
               ),
             ),
             20.height,
-            RequiredValidationText(
-                required: false, titleText: language.videoUrl),
-            5.height,
-            AppTextField(
-                textInputAction: TextInputAction.done,
-                isValidationRequired: false,
-                controller: videoUrlController,
-                focus: videoUrlFocus,
-                textFieldType: TextFieldType.URL,
-                keyboardType: TextInputType.url,
-                decoration: defaultInputDecoration(context,
-                    label: language.enterVideoUrl)),
-            20.height,
-            Row(
-              children: [
-                Text(language.premiumProperty,
-                        style: primaryTextStyle(size: 18))
-                    .expand(),
-                CupertinoSwitch(
-                  thumbColor: primaryExtraLight,
-                  activeColor: primaryColor,
-                  value: isPremium,
-                  onChanged: (bool val) {
-                    isPremium = val;
-                    setState(() {});
-                  },
-                ),
-              ],
-            ),
-            22.height,
+            // RequiredValidationText(
+            //     required: false, titleText: language.videoUrl),
+            // 5.height,
+            // AppTextField(
+            //     textInputAction: TextInputAction.done,
+            //     isValidationRequired: false,
+            //     controller: videoUrlController,
+            //     focus: videoUrlFocus,
+            //     textFieldType: TextFieldType.URL,
+            //     keyboardType: TextInputType.url,
+            //     decoration: defaultInputDecoration(context,
+            //         label: language.enterVideoUrl)),
+            // 20.height,
+            // Row(
+            //   children: [
+            //     Text(language.premiumProperty,
+            //             style: primaryTextStyle(size: 18))
+            //         .expand(),
+            //     CupertinoSwitch(
+            //       thumbColor: primaryExtraLight,
+            //       activeColor: primaryColor,
+            //       value: isPremium,
+            //       onChanged: (bool val) {
+            //         isPremium = val;
+            //         setState(() {});
+            //       },
+            //     ),
+            //   ],
+            // ),
+            // 22.height,
           ],
         ).paddingSymmetric(horizontal: 16),
       ),

@@ -24,7 +24,8 @@ class SplashScreen extends StatefulWidget {
   SplashScreenState createState() => SplashScreenState();
 }
 
-class SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver {
+class SplashScreenState extends State<SplashScreen>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -47,7 +48,7 @@ class SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver 
           setValue(LanguageJsonDataRes, value.toJson());
           // Check if default language set from server
           bool isSetLanguage =
-          getBoolAsync(IS_SELECTED_LANGUAGE_CHANGE, defaultValue: false);
+              getBoolAsync(IS_SELECTED_LANGUAGE_CHANGE, defaultValue: false);
           if (!isSetLanguage) {
             for (int i = 0; i < value.data!.length; i++) {
               if (value.data![i].isDefaultLanguage == 1) {
@@ -67,10 +68,10 @@ class SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver 
         }
       } else {
         String getJsonData =
-        getStringAsync(LanguageJsonDataRes, defaultValue: "");
+            getStringAsync(LanguageJsonDataRes, defaultValue: "");
         if (getJsonData.isNotEmpty) {
           ServerLanguageResponse languageSettings =
-          ServerLanguageResponse.fromJson(json.decode(getJsonData.trim()));
+              ServerLanguageResponse.fromJson(json.decode(getJsonData.trim()));
           if (languageSettings.data!.length > 0) {
             defaultServerLanguageData = languageSettings.data;
             performLanguageOperation(defaultServerLanguageData);
@@ -82,15 +83,20 @@ class SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver 
       log(error);
     });
 
-
     //await 3.seconds.delay;
     if (!getBoolAsync(IS_FIRST_TIME)) {
       WalkThroughScreen().launch(context, isNewTask: true);
     } else {
       if (appStore.isLoggedIn) {
-        MainScreen().launch(context, isNewTask: true);
+        // MainScreen().launch(context, isNewTask: true);
+        DashboardScreen(
+          isSplash: true,
+        ).launch(context, isNewTask: true);
       } else {
-        MainScreen().launch(context, isNewTask: false);
+        DashboardScreen(
+          isSplash: true,
+        ).launch(context, isNewTask: false);
+        // MainScreen().launch(context, isNewTask: false);
       }
     }
   }
@@ -105,8 +111,10 @@ class SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver 
     return AnnotatedRegion(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: appStore.isDarkModeOn ? Brightness.light : Brightness.light,
-        systemNavigationBarIconBrightness: appStore.isDarkModeOn ? Brightness.light : Brightness.light,
+        statusBarIconBrightness:
+            appStore.isDarkModeOn ? Brightness.light : Brightness.light,
+        systemNavigationBarIconBrightness:
+            appStore.isDarkModeOn ? Brightness.light : Brightness.light,
       ),
       child: Scaffold(
         backgroundColor: primaryColor,
