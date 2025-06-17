@@ -84,7 +84,9 @@ class _ChooseTransactionTypeScreenState
                       iWantToSale();
                       selectedTransactionTypeId =
                           1; // Assuming 1 is the ID for Sale
-                      DashboardScreen().launch(context, isNewTask: true);
+                      DashboardScreen(
+                        transactionType: selectedTransactionTypeId,
+                      ).launch(context, isNewTask: true);
                     },
                     child: TransactionTypeCard(
                         isSelected: isSale, imagePath: ic_sale, type: 'بيع'),
@@ -96,7 +98,7 @@ class _ChooseTransactionTypeScreenState
                     onTap: () {
                       iWantToRent();
                       selectedTransactionTypeId =
-                          2; // Assuming 2 is the ID for Rent
+                          0; // Assuming 0 is the ID for Rent
                     },
                     child: TransactionTypeCard(
                         isSelected: isRent, imagePath: ic_rent, type: 'ايجار'),

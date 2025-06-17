@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import '../extensions/extension_util/widget_extensions.dart';
@@ -17,8 +18,14 @@ import 'subscribe_screen.dart';
 class CategorySelectedScreen extends StatefulWidget {
   final String? categoryName;
   final int? categoryId;
-
-  const CategorySelectedScreen({this.categoryName, this.categoryId});
+  final int? transactionType;
+  final Map<String, String>? selectedOptions;
+  const CategorySelectedScreen(
+      {this.categoryName,
+      this.categoryId,
+      this.transactionType,
+      this.selectedOptions,
+      super.key});
 
   @override
   State<CategorySelectedScreen> createState() => _CategorySelectedScreenState();
@@ -64,8 +71,18 @@ class _CategorySelectedScreenState extends State<CategorySelectedScreen> {
     Map req = {
       "city": userStore.cityName,
       "category_id": widget.categoryId,
+      "property_for": widget.transactionType,
     };
-
+    if (widget.selectedOptions != null && widget.selectedOptions!.isNotEmpty) {
+      int i = 1;
+      widget.selectedOptions!.values.forEach((value) {
+        req["filter_option[]$i"] = value;
+        i++;
+      });
+    }
+    if (kDebugMode) {
+      print('object req: $req');
+    }
     await filterApi(req, page: 1).then((value) {
       numPage = value.pagination!.totalPages;
       isLastPage = false;
@@ -80,6 +97,7 @@ class _CategorySelectedScreenState extends State<CategorySelectedScreen> {
       appStore.setLoading(false);
       log(error);
     });
+    widget.selectedOptions?.clear();
   }
 
   @override

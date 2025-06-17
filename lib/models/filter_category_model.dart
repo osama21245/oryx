@@ -1,17 +1,19 @@
 class FilterCategoryModel {
   String? name;
-  List<Options>? options;
+  List<Option>? options;
 
   FilterCategoryModel({this.name, this.options});
+
   FilterCategoryModel.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     if (json['options'] != null) {
-      options = <Options>[];
+      options = <Option>[];
       json['options'].forEach((v) {
-        options!.add(Options.fromJson(v));
+        options!.add(Option.fromJson(v));
       });
     }
   }
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['name'] = name;
@@ -21,20 +23,22 @@ class FilterCategoryModel {
     return data;
   }
 }
-//
 
-class Options {
-  String? name;
+class Option {
+  String? value;
+  int? id;
 
-  Options({this.name});
+  Option({this.value, this.id});
 
-  Options.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
+  Option.fromJson(Map<String, dynamic> json) {
+    value = json['value'];
+    id = json['id'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['name'] = name;
+    data['value'] = value;
+    data['id'] = id;
     return data;
   }
 }
