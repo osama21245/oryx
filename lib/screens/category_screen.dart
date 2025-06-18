@@ -80,6 +80,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('ddddddaaaaaaaaaaaa ${data!.slider!.length}');
     return Scaffold(
       appBar: AppBar(
         leading: Image.asset(

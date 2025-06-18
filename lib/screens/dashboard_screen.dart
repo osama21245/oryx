@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:orex/screens/main_screen.dart';
 // import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import '../components/add_property_dialouge.dart';
 import '../extensions/extension_util/context_extensions.dart';
@@ -28,8 +29,9 @@ import 'home_screen.dart';
 import 'limit_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
-  final int? transactionType;
-  DashboardScreen({super.key, this.transactionType});
+  int? transactionType;
+  bool isSplash;
+  DashboardScreen({super.key, this.transactionType, this.isSplash = true});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -38,21 +40,39 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int currentIndex = 0;
 
-  late final List<Widget> tabs;
+  bool isSplashActive = true;
+  late List<Widget> tabs = [
+    // HomeScreen(),
+    // CategoryScreen(
+    //   transactionType: widget.transactionType,
+    // ),
+    isSplashActive
+        ? MainScreen()
+        : CategoryScreen(
+            transactionType: widget.transactionType,
+          ),
+    FavouriteScreen(),
+    ProfileScreen()
+  ];
   // PickResult? selectedPlace;
   bool received = true;
-
   @override
   void initState() {
     super.initState();
-    tabs = [
-      HomeScreen(),
-      CategoryScreen(
-        transactionType: widget.transactionType,
-      ),
-      FavouriteScreen(),
-      ProfileScreen()
-    ];
+    isSplashActive = widget.isSplash;
+    // tabs = [
+    //   // HomeScreen(),
+    //   // CategoryScreen(
+    //   //   transactionType: widget.transactionType,
+    //   // ),
+    //   isSplashActive
+    //       ? MainScreen()
+    //       : CategoryScreen(
+    //           transactionType: widget.transactionType,
+    //         ),
+    //   FavouriteScreen(),
+    //   ProfileScreen()
+    // ];
     OneSignal.User.pushSubscription.optIn();
     init();
   }
@@ -206,7 +226,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
           fabLocation: StylishBarFabLocation.center,
           onTap: (index) {
             currentIndex = index;
-            setState(() {});
+            isSplashActive = true;
+            setState(() {
+              tabs = [
+                // HomeScreen(),
+                // CategoryScreen(
+                //   transactionType: widget.transactionType,
+                // ),
+                isSplashActive
+                    ? MainScreen()
+                    : CategoryScreen(
+                        transactionType: widget.transactionType,
+                      ),
+                FavouriteScreen(),
+                ProfileScreen()
+              ];
+            });
           },
           items: [
             BottomBarItem(
@@ -216,13 +251,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   height: 24, width: 24, color: primaryColor),
               title: SizedBox(),
             ),
-            BottomBarItem(
-              icon: Image.asset(ic_category,
-                  height: 24, width: 24, color: primaryColor),
-              selectedIcon: Image.asset(ic_category_fill,
-                  height: 24, width: 24, color: primaryColor),
-              title: SizedBox(),
-            ),
+            // BottomBarItem(
+            //   icon: Image.asset(ic_category,
+            //       height: 24, width: 24, color: primaryColor),
+            //   selectedIcon: Image.asset(ic_category_fill,
+            //       height: 24, width: 24, color: primaryColor),
+            //   title: SizedBox(),
+            // ),
             BottomBarItem(
               icon: Image.asset(ic_favorite,
                   height: 24, width: 24, color: primaryColor),

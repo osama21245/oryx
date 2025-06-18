@@ -3,6 +3,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:orex/components/transaction_type_card.dart';
 import 'package:orex/extensions/extension_util/widget_extensions.dart';
 import 'package:orex/screens/dashboard_screen.dart';
+import 'package:orex/screens/home_screen.dart';
 import 'package:orex/utils/images.dart';
 import '../components/app_bar_components.dart';
 import '../extensions/loader_widget.dart';
@@ -61,6 +62,7 @@ class _ChooseTransactionTypeScreenState
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
+    print('dataaaaaaaaa:${data!.slider!.length}');
     return Observer(builder: (context) {
       return Scaffold(
           appBar: AppBar(
@@ -86,6 +88,7 @@ class _ChooseTransactionTypeScreenState
                           1; // Assuming 1 is the ID for Sale
                       DashboardScreen(
                         transactionType: selectedTransactionTypeId,
+                        isSplash: false,
                       ).launch(context, isNewTask: true);
                     },
                     child: TransactionTypeCard(
@@ -99,6 +102,10 @@ class _ChooseTransactionTypeScreenState
                       iWantToRent();
                       selectedTransactionTypeId =
                           0; // Assuming 0 is the ID for Rent
+                      DashboardScreen(
+                        transactionType: selectedTransactionTypeId,
+                        isSplash: false,
+                      ).launch(context, isNewTask: true);
                     },
                     child: TransactionTypeCard(
                         isSelected: isRent, imagePath: ic_rent, type: 'ايجار'),
