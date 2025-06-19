@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:orex/models/filter_category_model.dart';
 
 import '../components/AmenityTextFiledComponent.dart';
 import '../components/app_bar_components.dart';
@@ -46,6 +48,8 @@ import '../utils/colors.dart';
 import '../utils/constants.dart';
 import '../utils/images.dart';
 import 'home_screen.dart';
+
+Map<String, String> selectedOptions = {};
 
 class AddPropertyScreen extends StatefulWidget {
   final bool? updateProperty;
@@ -98,6 +102,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   List<CategoryData> categoryData = [];
   List<ABC> listTest = [];
   ABC? selectedValue;
+  List<FilterCategoryModel> filterCategoryList = [];
 
   getList() {
     listTest.add(ABC(0, language.daily, DURATION_DAILY));
@@ -181,6 +186,63 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     setState(() {});
   }
 
+  getFilterCategory() async {
+    appStore.setLoading(true);
+    await getFilterCategoryApi(selectedCategoryId!).then((value) {
+      filterCategoryList.clear();
+      if (value.isNotEmpty) {
+        value.forEach((element) {
+          if (kDebugMode) {
+            print('element.toJson(): ${element.toJson()}');
+          }
+          filterCategoryList.add(element);
+        });
+      } else {
+        filterCategoryList.add(
+            FilterCategoryModel(name: 'No Filters Available', options: []));
+      }
+      setState(() {});
+      appStore.setLoading(false);
+    }).catchError((e) {
+      appStore.setLoading(false);
+      print(e.toString());
+    });
+  }
+
+  Widget filterItem(FilterCategoryModel? model) {
+    print('model!.toJson(): ${model?.toJson()}');
+    return DropdownButtonFormField<Option>(
+      icon: Icon(Icons.keyboard_arrow_down_rounded, color: black),
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
+        ),
+        filled: true,
+        fillColor: appStore.isDarkModeOn ? cardDarkColor : Color(0xffE9E9E9),
+        hintText: model?.name ?? 'Filter',
+        // border: OutlineInputBorder(
+        //   borderRadius: BorderRadius.circular(8),
+        // ),
+      ),
+      items: model?.options
+          ?.map((option) => DropdownMenuItem<Option>(
+                value: option,
+                child: Text(option.value ?? ''),
+              ))
+          .toList(),
+      onChanged: (value) {
+        // Handle filter selection
+        if (value != null && model!.name != null) {
+          setState(() {
+            selectedOptions[model.name!] = value.value.toString();
+          });
+          print('Selected filter: ${value.value?.toString()}');
+        }
+      },
+    );
+  }
+
   //region update property data
   setUpdatePropertyData() {
     if (widget.updateProperty.validate()) {
@@ -233,12 +295,19 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     MultipartRequest multiPartRequest = !widget.updateProperty.validate()
         ? await getMultiPartRequest('property-save')
         : await getMultiPartRequest('property-update/${widget.pId}');
+    // Build filter_options map
+    Map<String, dynamic> filterOptionsMap = {};
+    for (var filter in filterCategoryList) {
+      var value = selectedOptions[filter.name ?? ''];
+      filterOptionsMap[filter.name ?? ''] =
+          (value == null || value.isEmpty) ? null : value;
+    }
     multiPartRequest.fields['name'] = propertyNameController.text;
     multiPartRequest.fields['category_id'] = selectedCategoryId.toString();
     if (widget.propertyFor == 0 || widget.propertyFor == 2)
       multiPartRequest.fields['price_duration'] =
           priceDurationValue!.toLowerCase();
-    multiPartRequest.fields['price'] = priceController.text;
+    multiPartRequest.fields['price'] = priceController.text.replaceAll(',', '');
     multiPartRequest.fields['furnished_type'] = furnishedType.toString();
     multiPartRequest.fields['saller_type'] = sellerType.toString();
     multiPartRequest.fields['property_for'] = widget.propertyFor.toString();
@@ -258,6 +327,9 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     multiPartRequest.fields['video_url'] = videoUrlController.text;
     multiPartRequest.fields['status'] = PROPERTY_ACTIVE;
     multiPartRequest.fields['premium_property'] = isPremium == true ? '1' : '0';
+    multiPartRequest.fields['filter_options'] = jsonEncode(filterOptionsMap);
+    print(
+        'Filter Options Map: ${jsonEncode(filterOptionsMap)}'); // Debugging line
     isAmenityIsEmpty = false;
     dynamicAmenityList.forEach((element) {
       if (!element.dynamicAmenityValue.toString().isEmptyOrNull) {
@@ -315,6 +387,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
         if ((data as String).isJson()) {
           EPropertyBaseResponse res =
               EPropertyBaseResponse.fromJson(jsonDecode(data));
+          print("Response is ${res.toJson()}");
           appStore.setLoading(false);
           if (res.message == "Property has been save successfully") {
             toast(res.message.toString());
@@ -334,10 +407,12 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
         isAmenityIsEmpty = false;
       },
       onError: (error) {
+        print("Error is $error");
         log(multiPartRequest.toString());
         toast(error.toString());
       },
     ).catchError((e) {
+      print("Error issssss " + e.toString());
       toast(e.toString());
     }).whenComplete(() => appStore.setLoading(false));
     // } else {
@@ -546,6 +621,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
               } else {
                 if (mThirdComponentFormKey.currentState!.validate()) {
                   saveProperty();
+                  selectedOptions.clear();
                 }
               }
               setState(() {});
@@ -643,6 +719,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                     ),
                   ).onTap(() {
                     selectedCategoryId = categoryData[i].id!;
+                    getFilterCategory(); // Add this line to call getFilterCategory
                     setState(() {});
                   });
                 },
@@ -903,7 +980,11 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             //   },
             //   child: Container(
             //     height: 50,
-            //     decoration: BoxDecoration(color: appStore.isDarkModeOn ? cardDarkColor : primaryExtraLight, borderRadius: BorderRadius.circular(12)),
+            //     decoration: BoxDecoration(
+            //         color: appStore.isDarkModeOn
+            //             ? cardDarkColor
+            //             : primaryExtraLight,
+            //         borderRadius: BorderRadius.circular(12)),
             //     child: Row(
             //       mainAxisAlignment: MainAxisAlignment.center,
             //       children: [
@@ -937,7 +1018,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             //         focus: countryFocus,
             //         textFieldType: TextFieldType.NAME,
             //         keyboardType: TextInputType.streetAddress,
-            //         decoration: defaultInputDecoration(context, label: language.country),
+            //         decoration: defaultInputDecoration(context,
+            //             label: language.country),
             //         onTap: () async {
             //           if (mapLocation.text.isEmpty) {
             //             toast(language.pleaseChooseAddressFromMap);
@@ -955,7 +1037,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             //         focus: stateFocus,
             //         textFieldType: TextFieldType.NAME,
             //         keyboardType: TextInputType.streetAddress,
-            //         decoration: defaultInputDecoration(context, label: language.state),
+            //         decoration:
+            //             defaultInputDecoration(context, label: language.state),
             //         onTap: () async {
             //           if (mapLocation.text.isEmpty) {
             //             toast(language.pleaseChooseAddressFromMap);
@@ -966,22 +1049,22 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             //   ],
             // ),
             // 10.height,
-            // AppTextField(
-            //   readOnly: mapLocation.text.isEmpty ? true : false,
-            //   isValidationRequired: true,
-            //   textInputAction: TextInputAction.go,
-            //   controller: cityController,
-            //   focus: cityFocus,
-            //   textFieldType: TextFieldType.NAME,
-            //   keyboardType: TextInputType.streetAddress,
-            //   decoration: defaultInputDecoration(context, label: language.city),
-            //   onTap: () async {
-            //     if (mapLocation.text.isEmpty) {
-            //       toast(language.pleaseChooseAddressFromMap);
-            //     }
-            //   },
-            // ),
-            // citySelectionWidget(),
+            AppTextField(
+              readOnly: mapLocation.text.isEmpty ? true : false,
+              isValidationRequired: true,
+              textInputAction: TextInputAction.go,
+              controller: cityController,
+              focus: cityFocus,
+              textFieldType: TextFieldType.NAME,
+              keyboardType: TextInputType.streetAddress,
+              decoration: defaultInputDecoration(context, label: language.city),
+              onTap: () async {
+                if (mapLocation.text.isEmpty) {
+                  toast(language.pleaseChooseAddressFromMap);
+                }
+              },
+            ),
+            citySelectionWidget(),
             // 20.height,
             RequiredValidationText(
                 required: false, titleText: language.addPicture),
@@ -1269,107 +1352,118 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                 20.height,
                 Text(language.extraFacilities, style: primaryTextStyle()),
                 20.height,
-                ListView.builder(
-                    physics: ScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: amenityValueData.length,
-                    itemBuilder: (context, i) {
-                      return ExpansionTile(
-                        shape: dialogShape(8),
-                        backgroundColor: appStore.isDarkModeOn
-                            ? cardDarkColor
-                            : primaryExtraLight,
-                        collapsedBackgroundColor: appStore.isDarkModeOn
-                            ? cardDarkColor
-                            : primaryExtraLight,
-                        title: Text(amenityValueData[i].name.toString(),
-                            style: primaryTextStyle()),
-                        children: [
-                          if (amenityValueData[i].type == AMENITY_TYPE_TEXT_BOX)
-                            AmenityTextFiledComponent(
-                              amenityID: amenityValueData[i].id,
-                              amenityValueData: amenityValueData[i].name,
-                              isUpdate: widget.updateProperty,
-                              amenityType: AMENITY_TYPE_TEXT_BOX,
-                              onUpdate: updateRadioBtnData,
-                              updatedValue: (newAmenityValueData != null &&
-                                          newAmenityValueData!.isNotEmpty) &&
-                                      !isCategoryChanged.validate()
-                                  ? newAmenityValueData![i].value
-                                  : '',
-                            ),
-                          if (amenityValueData[i].type == AMENITY_TYPE_TEXTAREA)
-                            AmenityTextFiledComponent(
-                              amenityID: amenityValueData[i].id,
-                              amenityType: AMENITY_TYPE_TEXTAREA,
-                              amenityValueData: amenityValueData[i].name,
-                              isUpdate: widget.updateProperty,
-                              onUpdate: updateRadioBtnData,
-                              updatedValue: (newAmenityValueData != null &&
-                                          newAmenityValueData!.isNotEmpty) &&
-                                      !isCategoryChanged.validate()
-                                  ? newAmenityValueData![i].value
-                                  : '',
-                            ),
-                          if (amenityValueData[i].type == AMENITY_TYPE_DROPDOWN)
-                            DropDownComponent(
-                              dropdownValues: amenityValueData[i].value,
-                              amenityId: amenityValueData[i].id,
-                              onUpdate: updateRadioBtnData,
-                              isUpdateProperty: widget.updateProperty,
-                              selectedDropDownValue: (newAmenityValueData !=
-                                              null &&
-                                          newAmenityValueData!.isNotEmpty) &&
-                                      !isCategoryChanged.validate()
-                                  ? newAmenityValueData![i].value
-                                  : '',
-                            ),
-                          if (amenityValueData[i].type ==
-                              AMENITY_TYPE_RADIO_BUTTON)
-                            RadioComponent(
-                              radioValues: amenityValueData[i].value,
-                              amenityId: amenityValueData[i].id,
-                              onUpdate: updateRadioBtnData,
-                              isUpdateProperty:
-                                  widget.updateProperty.validate(),
-                              selectedRadioValue: (newAmenityValueData !=
-                                              null &&
-                                          newAmenityValueData!.isNotEmpty) &&
-                                      !isCategoryChanged.validate()
-                                  ? newAmenityValueData![i].value
-                                  : '',
-                            ),
-                          if (amenityValueData[i].type == AMENITY_TYPE_CHECKBOX)
-                            CheckBoxComponent(
-                                checkboxValues: amenityValueData[i].value,
-                                amenityId: amenityValueData[i].id,
-                                pId: widget.pId,
-                                isUpdateProperty: widget.updateProperty,
-                                newCheckboxValues: (newAmenityValueData !=
-                                                null &&
-                                            newAmenityValueData!.isNotEmpty) &&
-                                        !isCategoryChanged.validate()
-                                    ? newAmenityValueData![i].value
-                                    : [],
-                                onUpdate: updateCheckBoxData),
-                          if (amenityValueData[i].type == AMENITY_TYPE_NUMBER)
-                            AmenityTextFiledComponent(
-                              amenityID: amenityValueData[i].id,
-                              amenityValueData: amenityValueData[i].name,
-                              isUpdate: widget.updateProperty,
-                              onUpdate: updateRadioBtnData,
-                              amenityType: AMENITY_TYPE_NUMBER,
-                              updatedValue: (newAmenityValueData != null &&
-                                          newAmenityValueData!.isNotEmpty) &&
-                                      !isCategoryChanged.validate()
-                                  ? newAmenityValueData![i].value
-                                  : '',
-                            ),
-                        ],
-                      )
-                          .cornerRadiusWithClipRRect(8.0)
-                          .paddingSymmetric(vertical: 8);
-                    }),
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    return filterItem(filterCategoryList[index]);
+                  },
+                  separatorBuilder: (context, index) => const SizedBox(
+                    height: 16,
+                  ),
+                  itemCount: filterCategoryList.length,
+                ),
+                // ListView.builder(
+                //     physics: ScrollPhysics(),
+                //     shrinkWrap: true,
+                //     itemCount: amenityValueData.length,
+                //     itemBuilder: (context, i) {
+                //       return ExpansionTile(
+                //         shape: dialogShape(8),
+                //         backgroundColor: appStore.isDarkModeOn
+                //             ? cardDarkColor
+                //             : primaryExtraLight,
+                //         collapsedBackgroundColor: appStore.isDarkModeOn
+                //             ? cardDarkColor
+                //             : primaryExtraLight,
+                //         title: Text(amenityValueData[i].name.toString(),
+                //             style: primaryTextStyle()),
+                //         children: [
+                //           if (amenityValueData[i].type == AMENITY_TYPE_TEXT_BOX)
+                //             AmenityTextFiledComponent(
+                //               amenityID: amenityValueData[i].id,
+                //               amenityValueData: amenityValueData[i].name,
+                //               isUpdate: widget.updateProperty,
+                //               amenityType: AMENITY_TYPE_TEXT_BOX,
+                //               onUpdate: updateRadioBtnData,
+                //               updatedValue: (newAmenityValueData != null &&
+                //                           newAmenityValueData!.isNotEmpty) &&
+                //                       !isCategoryChanged.validate()
+                //                   ? newAmenityValueData![i].value
+                //                   : '',
+                //             ),
+                //           if (amenityValueData[i].type == AMENITY_TYPE_TEXTAREA)
+                //             AmenityTextFiledComponent(
+                //               amenityID: amenityValueData[i].id,
+                //               amenityType: AMENITY_TYPE_TEXTAREA,
+                //               amenityValueData: amenityValueData[i].name,
+                //               isUpdate: widget.updateProperty,
+                //               onUpdate: updateRadioBtnData,
+                //               updatedValue: (newAmenityValueData != null &&
+                //                           newAmenityValueData!.isNotEmpty) &&
+                //                       !isCategoryChanged.validate()
+                //                   ? newAmenityValueData![i].value
+                //                   : '',
+                //             ),
+                //           if (amenityValueData[i].type == AMENITY_TYPE_DROPDOWN)
+                //             DropDownComponent(
+                //               dropdownValues: amenityValueData[i].value,
+                //               amenityId: amenityValueData[i].id,
+                //               onUpdate: updateRadioBtnData,
+                //               isUpdateProperty: widget.updateProperty,
+                //               selectedDropDownValue: (newAmenityValueData !=
+                //                               null &&
+                //                           newAmenityValueData!.isNotEmpty) &&
+                //                       !isCategoryChanged.validate()
+                //                   ? newAmenityValueData![i].value
+                //                   : '',
+                //             ),
+                //           if (amenityValueData[i].type ==
+                //               AMENITY_TYPE_RADIO_BUTTON)
+                //             RadioComponent(
+                //               radioValues: amenityValueData[i].value,
+                //               amenityId: amenityValueData[i].id,
+                //               onUpdate: updateRadioBtnData,
+                //               isUpdateProperty:
+                //                   widget.updateProperty.validate(),
+                //               selectedRadioValue: (newAmenityValueData !=
+                //                               null &&
+                //                           newAmenityValueData!.isNotEmpty) &&
+                //                       !isCategoryChanged.validate()
+                //                   ? newAmenityValueData![i].value
+                //                   : '',
+                //             ),
+                //           if (amenityValueData[i].type == AMENITY_TYPE_CHECKBOX)
+                //             CheckBoxComponent(
+                //                 checkboxValues: amenityValueData[i].value,
+                //                 amenityId: amenityValueData[i].id,
+                //                 pId: widget.pId,
+                //                 isUpdateProperty: widget.updateProperty,
+                //                 newCheckboxValues: (newAmenityValueData !=
+                //                                 null &&
+                //                             newAmenityValueData!.isNotEmpty) &&
+                //                         !isCategoryChanged.validate()
+                //                     ? newAmenityValueData![i].value
+                //                     : [],
+                //                 onUpdate: updateCheckBoxData),
+                //           if (amenityValueData[i].type == AMENITY_TYPE_NUMBER)
+                //             AmenityTextFiledComponent(
+                //               amenityID: amenityValueData[i].id,
+                //               amenityValueData: amenityValueData[i].name,
+                //               isUpdate: widget.updateProperty,
+                //               onUpdate: updateRadioBtnData,
+                //               amenityType: AMENITY_TYPE_NUMBER,
+                //               updatedValue: (newAmenityValueData != null &&
+                //                           newAmenityValueData!.isNotEmpty) &&
+                //                       !isCategoryChanged.validate()
+                //                   ? newAmenityValueData![i].value
+                //                   : '',
+                //             ),
+                //         ],
+                //       )
+                //           .cornerRadiusWithClipRRect(8.0)
+                //           .paddingSymmetric(vertical: 8);
+                //     }),
                 20.height,
               ],
             ).paddingSymmetric(horizontal: 16),
