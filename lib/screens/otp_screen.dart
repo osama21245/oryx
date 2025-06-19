@@ -94,7 +94,7 @@ class _OTPScreenState extends State<OTPScreen> {
       Map req = {
         "username": widget.phoneNumber!.replaceAll('+', ''),
         "login_type": LoginTypeOTP,
-        "user_type": LoginUser,
+        // "user_type": LoginUser,
         "accessToken": widget.phoneNumber!.replaceAll('+', ''),
         "contact_number": widget.phoneNumber,
         'player_id': getStringAsync(PLAYER_ID).validate(),

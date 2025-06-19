@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:orex/screens/developer_screen.dart';
 import 'package:orex/screens/main_screen.dart';
 // import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import '../components/add_property_dialouge.dart';
@@ -52,7 +53,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             transactionType: widget.transactionType,
           ),
     FavouriteScreen(),
-    ProfileScreen()
+    if (userStore.userType == 'developer') DeveloperScreen(),
+    ProfileScreen(),
   ];
   // PickResult? selectedPlace;
   bool received = true;
@@ -239,7 +241,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         transactionType: widget.transactionType,
                       ),
                 FavouriteScreen(),
-                ProfileScreen()
+                if (userStore.userType == 'developer') DeveloperScreen(),
+                ProfileScreen(),
               ];
             });
           },
@@ -265,6 +268,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   height: 24, width: 24, color: primaryColor),
               title: SizedBox(),
             ),
+            if (userStore.userType == 'developer')
+              BottomBarItem(
+                icon: Image.asset(ic_category,
+                    height: 24, width: 24, color: primaryColor),
+                selectedIcon: Image.asset(ic_category_fill,
+                    height: 24, width: 24, color: primaryColor),
+                title: SizedBox(),
+              ),
             BottomBarItem(
               icon: Image.asset(ic_profile,
                   height: 24, width: 24, color: primaryColor),

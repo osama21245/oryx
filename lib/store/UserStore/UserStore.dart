@@ -34,6 +34,9 @@ abstract class UserStoreBase with Store {
   String profileImage = '';
 
   @observable
+  String userType = '';
+
+  @observable
   String token = '';
 
   @observable
@@ -142,50 +145,57 @@ abstract class UserStoreBase with Store {
   UserResponse? userResponse;
 
   @action
-  Future<void> setChatGptApiKey(String val, {bool isInitialization = false}) async {
+  Future<void> setChatGptApiKey(String val,
+      {bool isInitialization = false}) async {
     chatGptApiKey = val;
     if (!isInitialization) await setValue(ChatGptApiKey, val);
   }
 
   @action
   Future<void> setContactInfo(int val, {bool isInitialization = false}) async {
-    contactInfo=0;
+    contactInfo = 0;
     contactInfo = val;
     if (!isInitialization) await setValue(CONTACT_INFO, val);
   }
 
   @action
-  Future<void> setTotalContactInfo(int val, {bool isInitialization = false}) async {
+  Future<void> setTotalContactInfo(int val,
+      {bool isInitialization = false}) async {
     totalContactInfo = val;
     if (!isInitialization) await setValue(TOTAL_CONTACT_INFO, val);
   }
 
   @action
-  Future<void> setAddLimitCount(int val, {bool isInitialization = false}) async {
+  Future<void> setAddLimitCount(int val,
+      {bool isInitialization = false}) async {
     addLimitCount = val;
     if (!isInitialization) await setValue(ADD_PROPERTY, val);
   }
 
   @action
-  Future<void> setTotalAddLimitCount(int val, {bool isInitialization = false}) async {
+  Future<void> setTotalAddLimitCount(int val,
+      {bool isInitialization = false}) async {
     totalAddLimitCount = val;
     if (!isInitialization) await setValue(TOTAL_ADD_PROPERTY, val);
   }
 
   @action
-  Future<void> setTotalAdvertisement(int val, {bool isInitialization = false}) async {
+  Future<void> setTotalAdvertisement(int val,
+      {bool isInitialization = false}) async {
     totalAdvertisement = val;
     if (!isInitialization) await setValue(TOTAL_ADVERTISEMENT, val);
   }
 
   @action
-  Future<void> setAdvertisement(int val, {bool isInitialization = false}) async {
+  Future<void> setAdvertisement(int val,
+      {bool isInitialization = false}) async {
     advertisement = val;
     if (!isInitialization) await setValue(ADVERTISEMENT, val);
   }
 
   @action
-  Future<void> setSubscription(String val, {bool isInitialization = false}) async {
+  Future<void> setSubscription(String val,
+      {bool isInitialization = false}) async {
     subscription = val;
     if (!isInitialization) await setValue(subscriptions, val);
   }
@@ -223,73 +233,85 @@ abstract class UserStoreBase with Store {
   }
 
   @action
-  Future<void> setRecentSearch(String val, {bool isInitialization = false}) async {
+  Future<void> setRecentSearch(String val,
+      {bool isInitialization = false}) async {
     recentSearch = val;
     if (!isInitialization) await setValue(RECENT_SEARCH, val);
   }
 
   @action
-  Future<void> setTermsCondition(String val, {bool isInitialization = false}) async {
+  Future<void> setTermsCondition(String val,
+      {bool isInitialization = false}) async {
     termsCondition = val;
     if (!isInitialization) await setValue(TermsCondition, val);
   }
 
   @action
-  Future<void> setCurrencyCodeID(String val, {bool isInitialization = false}) async {
+  Future<void> setCurrencyCodeID(String val,
+      {bool isInitialization = false}) async {
     currencySymbol = val;
     if (!isInitialization) await setValue(CurrencySymbol, val);
   }
 
   @action
-  Future<void> setCurrencyCode(String val, {bool isInitialization = false}) async {
+  Future<void> setCurrencyCode(String val,
+      {bool isInitialization = false}) async {
     currencyCode = val;
     if (!isInitialization) await setValue(CurrencyCode, val);
   }
 
   @action
-  Future<void> setCurrencyPositionID(String val, {bool isInitialization = false}) async {
+  Future<void> setCurrencyPositionID(String val,
+      {bool isInitialization = false}) async {
     currencyPosition = val;
     if (!isInitialization) await setValue(CurrencyPosition, val);
   }
 
   @action
-  Future<void> setOneSignalAppID(String val, {bool isInitialization = false}) async {
+  Future<void> setOneSignalAppID(String val,
+      {bool isInitialization = false}) async {
     oneSignalAppID = val;
     if (!isInitialization) await setValue(OneSignalAppID, val);
   }
 
   @action
-  Future<void> setOnesignalRestApiKey(String val, {bool isInitialization = false}) async {
+  Future<void> setOnesignalRestApiKey(String val,
+      {bool isInitialization = false}) async {
     onesignalRestApiKey = val;
     if (!isInitialization) await setValue(OnesignalRestApiKey, val);
   }
 
   @action
-  Future<void> setAdmobBannerId(String val, {bool isInitialization = false}) async {
+  Future<void> setAdmobBannerId(String val,
+      {bool isInitialization = false}) async {
     admobBannerId = val;
     if (!isInitialization) await setValue(AdmobBannerId, val);
   }
 
   @action
-  Future<void> setAdmobInterstitialId(String val, {bool isInitialization = false}) async {
+  Future<void> setAdmobInterstitialId(String val,
+      {bool isInitialization = false}) async {
     admobInterstitialId = val;
     if (!isInitialization) await setValue(AdmobInterstitialId, val);
   }
 
   @action
-  Future<void> setAdmobBannerIdIos(String val, {bool isInitialization = false}) async {
+  Future<void> setAdmobBannerIdIos(String val,
+      {bool isInitialization = false}) async {
     admobBannerIdIos = val;
     if (!isInitialization) await setValue(AdmobBannerIdIos, val);
   }
 
   @action
-  Future<void> setAdmobInterstitialIdIos(String val, {bool isInitialization = false}) async {
+  Future<void> setAdmobInterstitialIdIos(String val,
+      {bool isInitialization = false}) async {
     admobInterstitialIdIos = val;
     if (!isInitialization) await setValue(AdmobInterstitialIdIos, val);
   }
 
   @action
-  Future<void> setPrivacyPolicy(String val, {bool isInitialization = false}) async {
+  Future<void> setPrivacyPolicy(String val,
+      {bool isInitialization = false}) async {
     privacyPolicy = val;
     if (!isInitialization) await setValue(PRIVACY_POLICY, val);
   }
@@ -307,7 +329,8 @@ abstract class UserStoreBase with Store {
   }
 
   @action
-  Future<void> setDisplayName(String val, {bool isInitialization = false}) async {
+  Future<void> setDisplayName(String val,
+      {bool isInitialization = false}) async {
     displayName = val;
     if (!isInitialization) await setValue(DISPLAY_NAME, val);
   }
@@ -355,25 +378,34 @@ abstract class UserStoreBase with Store {
   }
 
   @action
+  Future<void> setUserType(String val, {bool isInitialization = false}) async {
+    userType = val;
+    if (!isInitialization) await setValue(USER_TYPE, val);
+  }
+
+  @action
   Future<void> setUserEmail(String val, {bool isInitialization = false}) async {
     email = val;
     if (!isInitialization) await setValue(EMAIL, val);
   }
 
   @action
-  Future<void> setUserPassword(String val, {bool isInitialization = false}) async {
+  Future<void> setUserPassword(String val,
+      {bool isInitialization = false}) async {
     password = val;
     if (!isInitialization) await setValue(PASSWORD, val);
   }
 
   @action
-  Future<void> setSubscriptionDetail(SubscriptionDetail val, {bool isInitialization = false}) async {
+  Future<void> setSubscriptionDetail(SubscriptionDetail val,
+      {bool isInitialization = false}) async {
     subscriptionDetail = val;
     if (!isInitialization) await setValue(SUBSCRIPTION_DETAIL, jsonEncode(val));
   }
 
   @action
-  Future<void> setUserDetail(UserResponse val, {bool isInitialization = false}) async {
+  Future<void> setUserDetail(UserResponse val,
+      {bool isInitialization = false}) async {
     userResponse = val;
     if (!isInitialization) await setValue(USER_DETAIL, jsonEncode(val));
   }
@@ -385,13 +417,15 @@ abstract class UserStoreBase with Store {
   }
 
   @action
-  Future<void> setUserLatitude(String val, {bool isInitialization = false}) async {
+  Future<void> setUserLatitude(String val,
+      {bool isInitialization = false}) async {
     latitude = val;
     if (!isInitialization) await setValue(LATITUDE, val);
   }
 
   @action
-  Future<void> setUserLongitude(String val, {bool isInitialization = false}) async {
+  Future<void> setUserLongitude(String val,
+      {bool isInitialization = false}) async {
     longitude = val;
     if (!isInitialization) await setValue(LONGITUDE, val);
   }
@@ -403,7 +437,8 @@ abstract class UserStoreBase with Store {
   }
 
   @action
-  Future<void> setUserPlayerId(String val, {bool isInitialization = false}) async {
+  Future<void> setUserPlayerId(String val,
+      {bool isInitialization = false}) async {
     userPlayerId = val;
     if (!isInitialization) await setValue(PLAYER_ID, val);
   }
