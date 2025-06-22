@@ -42,6 +42,7 @@ Future<void> getUSerDetail(BuildContext context, int? id) async {
     userStore.setFirstName(value.data!.firstName.validate());
     userStore.setUserEmail(value.data!.email.validate());
     userStore.setLastName(value.data!.lastName.validate());
+    userStore.setUserType(value.data!.userType.validate());
     userStore.setUserID(value.data!.id.validate());
     userStore.setPhoneNo(value.data!.contactNumber.validate());
     userStore.setUsername(value.data!.username.validate());
@@ -299,6 +300,7 @@ setLogInValue() {
     userStore.setUserEmail(getStringAsync(EMAIL));
     userStore.setFirstName(getStringAsync(FIRSTNAME));
     userStore.setLastName(getStringAsync(LASTNAME));
+    userStore.setUserType(getStringAsync(userType));
     userStore.setUserPassword(getStringAsync(PASSWORD));
     userStore.setUserImage(getStringAsync(USER_PROFILE_IMG));
     userStore.setPhoneNo(getStringAsync(PHONE_NUMBER));
