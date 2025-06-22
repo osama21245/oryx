@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dotted_border/dotted_border.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +16,12 @@ import 'package:orex/extensions/app_text_field.dart';
 import 'package:orex/extensions/colors.dart';
 import 'package:orex/extensions/common.dart';
 import 'package:orex/extensions/decorations.dart';
+import 'package:orex/models/base_response.dart';
+import 'package:orex/models/get_property_developer.dart';
+import 'package:orex/network/network_utills.dart';
+import 'package:orex/screens/dashboard_screen.dart';
+import 'package:orex/screens/subscribe_screen.dart';
+import 'package:orex/screens/success_property_add_screen.dart';
 import 'package:orex/utils/images.dart';
 import '../../models/dashBoard_response.dart' as dashR;
 import 'package:orex/extensions/extension_util/context_extensions.dart';
@@ -30,6 +38,8 @@ import 'package:orex/screens/home_screen.dart';
 import 'package:orex/utils/app_common.dart';
 import 'package:orex/utils/colors.dart';
 import 'package:orex/utils/constants.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:intl/intl.dart';
 
 class DeveloperScreen extends StatefulWidget {
@@ -47,13 +57,14 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
   bool isLastPage = false;
 
   List<CategoryData> categoryData = [];
+  PropertyResponseModel? preporty;
   List<String> selectedImages = [];
   List<XFile>? imageFileList = [];
 
   List<Map<String, TextEditingController>> priceMeterList = [
     {
       "price": TextEditingController(),
-      "meter": TextEditingController(),
+      "area": TextEditingController(),
     },
   ];
 
@@ -63,6 +74,7 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
   Uint8List? mainImage;
   String? mainImageName;
 
+  String? selectedProperty;
   String? mUserType;
 
   TextEditingController propertyNameController = TextEditingController();
@@ -89,6 +101,30 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
     await getPropertyCategory();
   }
 
+  getProperty(categoryId) async {
+    print('caaaaaaaaaaa $categoryId');
+    appStore.setLoading(true);
+
+    try {
+      final response = await getPropertyForDeveloper(categoryId);
+
+      // preportyList.clear();
+      if (response.data != null && response.data!.isNotEmpty) {
+        if (kDebugMode) {
+          for (var element in response.data!) {
+            print('element.toJson(): ${element.toJson()}');
+          }
+        }
+        preporty = response;
+      }
+    } catch (e) {
+      print("Error: $e");
+    } finally {
+      appStore.setLoading(false);
+      setState(() {});
+    }
+  }
+
   Future<void> getPropertyCategory() async {
     print('start fitch category');
     appStore.setLoading(true);
@@ -111,6 +147,68 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
     }).whenComplete(() => appStore.setLoading(false));
   }
 
+  Future<void> saveProperty() async {
+    hideKeyboard(context);
+    appStore.setLoading(true);
+
+    http.MultipartRequest multiPartRequest =
+        await getMultiPartRequest('sliders');
+
+    // البيانات العامة
+    multiPartRequest.fields['category_id'] = selectedCategoryId.toString();
+    multiPartRequest.fields['property_id'] = selectedProperty;
+    multiPartRequest.fields['name'] = propertyNameController.text;
+    multiPartRequest.fields['status'] = '1';
+    multiPartRequest.fields['description'] = descriptionController.text;
+
+    // ✅ إضافة area_prices بصيغة JSON
+    multiPartRequest.fields['area_prices'] = jsonEncode(
+      priceMeterList
+          .map((item) => {
+                'area': item['area']?.text ?? '',
+                'price': int.tryParse(item['price']?.text ?? '') ?? 0,
+              })
+          .toList(),
+    );
+
+    // ✅ تحميل الصورة الرئيسية إن وجدت
+    if (mainImagePath != null && !mainImagePath!.contains('https')) {
+      multiPartRequest.files
+          .add(await http.MultipartFile.fromPath('image', mainImagePath!));
+    }
+
+    // ✅ إرسال الطلب
+    multiPartRequest.headers.addAll(buildHeaderTokens());
+
+    sendMultiPartRequest(
+      multiPartRequest,
+      onSuccess: (data) async {
+        appStore.setLoading(false);
+        if ((data as String).isJson()) {
+          final res = EPropertyBaseResponse.fromJson(jsonDecode(data));
+          toast(res.message ?? 'تم الحفظ');
+          if (res.message == "Slider has been save successfully") {
+            DashboardScreen().launch(context);
+            appStore.addPropertyIndex = 0;
+            setState(() {});
+          } else if (res.message == "Plan Has Expired") {
+            SubscribeScreen().launch(context);
+          } else {
+            finish(context, true);
+          }
+        }
+      },
+      onError: (error) {
+        toast("Error: $error");
+        appStore.setLoading(false);
+      },
+    ).catchError((e) {
+      appStore.setLoading(false);
+      print('errererer ${e.toString()}');
+      toast("Exception: ${e.toString()}");
+    });
+  }
+
   Widget addPropertyComponent1() {
     return Stack(
       children: [
@@ -119,44 +217,44 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             20.height,
-            Text(language.areYouA, style: primaryTextStyle()),
-            10.height,
-            DropdownButtonFormField<String>(
-                dropdownColor:
-                    appStore.isDarkModeOn ? cardDarkColor : selectIconColor,
-                items: propertySellerType
-                    .map(
-                      (value) => DropdownMenuItem<String>(
-                        child: Text(value, style: primaryTextStyle()),
-                        value: value,
-                      ),
-                    )
-                    .toList(),
-                isExpanded: false,
-                isDense: true,
-                borderRadius: radius(),
-                decoration: defaultInputDecoration(context),
-                value: sellerType == 0
-                    ? OWNER
-                    : sellerType == 1
-                        ? BROKER
-                        : sellerType == 2
-                            ? BUILDER
-                            : mUserType,
-                onChanged: (String? value) {
-                  mUserType = value.validate();
-                  if (mUserType == OWNER) {
-                    sellerType = 0;
-                  } else if (mUserType == BROKER) {
-                    sellerType = 1;
-                  } else {
-                    sellerType = 2;
-                  }
-                  setState(() {});
-                  print("====" + sellerType.toString());
-                  print("====" + propertySellerType.toString());
-                }),
-            20.height,
+            // Text(language.areYouA, style: primaryTextStyle()),
+            // 10.height,
+            // DropdownButtonFormField<String>(
+            //     dropdownColor:
+            //         appStore.isDarkModeOn ? cardDarkColor : selectIconColor,
+            //     items: propertySellerType
+            //         .map(
+            //           (value) => DropdownMenuItem<String>(
+            //             child: Text(value, style: primaryTextStyle()),
+            //             value: value,
+            //           ),
+            //         )
+            //         .toList(),
+            //     isExpanded: false,
+            //     isDense: true,
+            //     borderRadius: radius(),
+            //     decoration: defaultInputDecoration(context),
+            //     value: sellerType == 0
+            //         ? OWNER
+            //         : sellerType == 1
+            //             ? BROKER
+            //             : sellerType == 2
+            //                 ? BUILDER
+            //                 : mUserType,
+            //     onChanged: (String? value) {
+            //       mUserType = value.validate();
+            //       if (mUserType == OWNER) {
+            //         sellerType = 0;
+            //       } else if (mUserType == BROKER) {
+            //         sellerType = 1;
+            //       } else {
+            //         sellerType = 2;
+            //       }
+            //       setState(() {});
+            //       print("====" + sellerType.toString());
+            //       print("====" + propertySellerType.toString());
+            //     }),
+            // 20.height,
             Text(language.selectCategory, style: primaryTextStyle()),
             20.height,
             AnimatedWrap(
@@ -263,6 +361,7 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
         ],
       ),
       bottomNavigationBar: AppButton(
+        enabled: !appStore.isLoading,
         text: appStore.addPropertyIndex == 0
             ? language.Continue
             : language.submit,
@@ -274,64 +373,63 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
             if (appStore.addPropertyIndex == 0) {
               if (selectedCategoryId != null) {
                 appStore.addPropertyIndex = 1;
+                getProperty(selectedCategoryId);
               } else {
                 toast(language.pleaseSelectCategory);
               }
+            } else {
+              if (mSecondComponentFormKey.currentState!.validate()) {
+                if (mainImagePath == null) {
+                  toast(language.pleaseSelectMainPicture);
+                  return;
+                }
+                if (selectedProperty == null) {
+                  toast('من فضلك اختر العقار');
+                  return;
+                }
+                saveProperty();
+              }
             }
-            //else if (appStore.addPropertyIndex == 1) {
-            //   if (mSecondComponentFormKey.currentState!.validate()) {
-            //     if (widget.propertyFor == 0 || widget.propertyFor == 2) {
-            //       if (priceDurationValue != null && selectedBhkIndex != null
-            //           //  &&
-            //           // latitude != null &&
-            //           // longitude != null &&
-            //           // mapLocation.text.isNotEmpty
-            //           ) {
-            //         appStore.addPropertyIndex = 2;
-            //       } else {
-            //         if (priceDurationValue.isEmptyOrNull)
-            //           toast(language.pleaseSelectPriceDuration);
-            //         if (mainImagePath.isEmptyOrNull)
-            //           toast(language.pleaseSelectMainPicture);
-            //         if (selectedImages.isEmpty)
-            //           toast(language.pleaseSelectOtherPicture);
-            //         if (selectedBhkIndex == null)
-            //           toast(language.pleaseSelectBHK);
-            //         // if (mapLocation.text.isEmpty) toast(language.pleaseSelectAddress);
-            //       }
-            //     } else {
-            //       print('dddddddddddddddddddddddddd');
-            //       if (selectedImages.isNotEmpty &&
-            //           mainImagePath != null &&
-            //           selectedBhkIndex != null) {
-            //         appStore.addPropertyIndex = 2;
-
-            //         setState(() {});
-            //       } else {
-            //         if (mainImagePath == null)
-            //           toast(language.pleaseSelectMainPicture);
-            //         if (selectedImages.isEmpty)
-            //           toast(language.pleaseSelectOtherPicture);
-            //         if (selectedBhkIndex == null)
-            //           toast(language.pleaseSelectBHK);
-            //       }
-            //     }
-            //   }
-            //   log('Selected index $selectedCategoryId');
-            //   addSelectedCategoryData();
-            // }
-            //else {
-            //   if (mThirdComponentFormKey.currentState!.validate()) {
-            //     saveProperty();
-            //     selectedOptions.clear();
-            //   }
-            // }
             setState(() {});
           } catch (error) {
             print('errooooooooo$error');
           }
         },
       ).paddingOnly(right: 16, bottom: 30, left: 16, top: 0),
+    );
+  }
+
+  Widget filterItem(PropertyResponseModel? model) {
+    print('model!.toJson(): ${model?.toJson()}');
+    return DropdownButtonFormField<Property>(
+      icon: Icon(Icons.keyboard_arrow_down_rounded, color: black),
+      decoration: InputDecoration(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide.none,
+        ),
+        filled: true,
+        fillColor: appStore.isDarkModeOn ? cardDarkColor : primaryExtraLight,
+        hintText: 'اختر الوحدة',
+        // border: OutlineInputBorder(
+        //   borderRadius: BorderRadius.circular(8),
+        // ),
+      ),
+      items: model?.data
+          ?.map((option) => DropdownMenuItem<Property>(
+                value: option,
+                child: Text(option.name ?? ''),
+              ))
+          .toList(),
+      onChanged: (value) {
+        // Handle filter selection
+        if (value != null) {
+          setState(() {
+            selectedProperty = value.id.toString();
+          });
+          print('Selected filter: ${value.id?.toString()}');
+        }
+      },
     );
   }
 
@@ -373,6 +471,8 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
               maxLines: 3,
             ),
             20.height,
+            filterItem(preporty),
+            20.height,
             RequiredValidationText(required: true, titleText: language.price),
             10.height,
             priceMeterFields(priceMeterList, context, setState: setState),
@@ -408,7 +508,6 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
             //     }
             //   },
             // ),
-            citySelectionWidget(),
             // 20.height,
             RequiredValidationText(
                 required: false, titleText: language.addPicture),
@@ -480,90 +579,90 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
                 ),
               ),
             20.height,
-            RequiredValidationText(
-                required: false, titleText: language.addOtherPicture),
-            10.height,
-            if (selectedImages.isNotEmpty)
-              AnimatedWrap(
-                itemCount: selectedImages.length,
-                runSpacing: 16,
-                spacing: 16,
-                children: List.generate(selectedImages.length, (i) {
-                  return Stack(
-                    alignment: Alignment.topRight,
-                    children: [
-                      selectedImages[i].contains('https')
-                          ? cachedImage(selectedImages[i].toString(),
-                                  width: (context.width() - 64) / 3,
-                                  height: 100,
-                                  fit: BoxFit.cover)
-                              .cornerRadiusWithClipRRect(8)
-                          : Image.file(
-                                  fit: BoxFit.fill,
-                                  width: (context.width() - 64) / 3,
-                                  height: 100,
-                                  File(selectedImages[i].toString()))
-                              .cornerRadiusWithClipRRect(8),
-                      Positioned(
-                        top: 2,
-                        right: 2,
-                        child: Container(
-                          padding: EdgeInsets.all(4),
-                          decoration: boxDecorationWithRoundedCorners(
-                              boxShape: BoxShape.circle),
-                          child: Icon(Icons.close, color: Colors.red, size: 12)
-                              .onTap(() {
-                            selectedImages.removeAt(i);
-                            setState(() {});
-                          }),
-                        ),
-                      )
-                    ],
-                  );
-                }),
-              ).visible(selectedImages.isNotEmpty),
-            10.height,
-            GestureDetector(
-              onTap: () async {
-                List<XFile> image = await ImagePicker().pickMultiImage();
-                imageFileList!.addAll(image);
-                imageFileList!.forEach((image) {
-                  selectedImages.add(image.path);
-                });
-                imageFileList!.clear();
-                setState(() {});
-              },
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: DottedBorder(
-                  options: RectDottedBorderOptions(
-                    dashPattern: [6, 3],
-                    color: Colors.grey,
-                  ),
-                  child: Container(
-                    height: 50,
-                    decoration: boxDecorationWithRoundedCorners(
-                        borderRadius: BorderRadius.circular(8),
-                        backgroundColor: appStore.isDarkModeOn
-                            ? cardDarkColor
-                            : primaryExtraLight),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(ic_gallery,
-                            height: 24, width: 24, color: grayColor),
-                        10.width,
-                        Text(language.addOtherPictures,
-                            style: secondaryTextStyle()),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            // RequiredValidationText(
+            //     required: false, titleText: language.addOtherPicture),
+            // 10.height,
+            // if (selectedImages.isNotEmpty)
+            //   AnimatedWrap(
+            //     itemCount: selectedImages.length,
+            //     runSpacing: 16,
+            //     spacing: 16,
+            //     children: List.generate(selectedImages.length, (i) {
+            //       return Stack(
+            //         alignment: Alignment.topRight,
+            //         children: [
+            //           selectedImages[i].contains('https')
+            //               ? cachedImage(selectedImages[i].toString(),
+            //                       width: (context.width() - 64) / 3,
+            //                       height: 100,
+            //                       fit: BoxFit.cover)
+            //                   .cornerRadiusWithClipRRect(8)
+            //               : Image.file(
+            //                       fit: BoxFit.fill,
+            //                       width: (context.width() - 64) / 3,
+            //                       height: 100,
+            //                       File(selectedImages[i].toString()))
+            //                   .cornerRadiusWithClipRRect(8),
+            //           Positioned(
+            //             top: 2,
+            //             right: 2,
+            //             child: Container(
+            //               padding: EdgeInsets.all(4),
+            //               decoration: boxDecorationWithRoundedCorners(
+            //                   boxShape: BoxShape.circle),
+            //               child: Icon(Icons.close, color: Colors.red, size: 12)
+            //                   .onTap(() {
+            //                 selectedImages.removeAt(i);
+            //                 setState(() {});
+            //               }),
+            //             ),
+            //           )
+            //         ],
+            //       );
+            //     }),
+            //   ).visible(selectedImages.isNotEmpty),
+            // 10.height,
+            // GestureDetector(
+            //   onTap: () async {
+            //     List<XFile> image = await ImagePicker().pickMultiImage();
+            //     imageFileList!.addAll(image);
+            //     imageFileList!.forEach((image) {
+            //       selectedImages.add(image.path);
+            //     });
+            //     imageFileList!.clear();
+            //     setState(() {});
+            //   },
+            //   child: ClipRRect(
+            //     borderRadius: BorderRadius.circular(8),
+            //     child: DottedBorder(
+            //       options: RectDottedBorderOptions(
+            //         dashPattern: [6, 3],
+            //         color: Colors.grey,
+            //       ),
+            //       child: Container(
+            //         height: 50,
+            //         decoration: boxDecorationWithRoundedCorners(
+            //             borderRadius: BorderRadius.circular(8),
+            //             backgroundColor: appStore.isDarkModeOn
+            //                 ? cardDarkColor
+            //                 : primaryExtraLight),
+            //         child: Row(
+            //           mainAxisAlignment: MainAxisAlignment.center,
+            //           children: [
+            //             Image.asset(ic_gallery,
+            //                 height: 24, width: 24, color: grayColor),
+            //             10.width,
+            //             Text(language.addOtherPictures,
+            //                 style: secondaryTextStyle()),
+            //           ],
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
             20.height,
           ],
-        ).paddingSymmetric(horizontal: 16),
+        ).visible(!appStore.isLoading).paddingSymmetric(horizontal: 16),
       ),
     );
   }
@@ -578,92 +677,6 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
         offset: value.length,
       ),
     );
-  }
-
-  Widget citySelectionWidget() {
-    return data != null
-        ? SizedBox(
-            width: double.infinity,
-            height: 60,
-            child: DropdownButtonFormField<String>(
-              focusColor: Colors.transparent,
-              alignment: Alignment.centerLeft,
-              isExpanded: true,
-              padding: EdgeInsets.zero,
-              elevation: 0,
-              icon:
-                  Icon(Icons.keyboard_arrow_down_rounded, color: primaryColor),
-              borderRadius: radius(),
-              decoration: InputDecoration(
-                  focusColor: Colors.transparent,
-                  hoverColor: Colors.transparent,
-                  prefixIconConstraints: BoxConstraints(minWidth: 1),
-                  prefixIcon: Image.asset(ic_map_point,
-                          color: primaryColor, width: 18, height: 18)
-                      .paddingOnly(left: 14, top: 10, bottom: 10, right: 10),
-                  alignLabelWithHint: true,
-                  enabledBorder: OutlineInputBorder(
-                      borderRadius: radius(24),
-                      borderSide: BorderSide(
-                          color: appStore.isDarkModeOn
-                              ? cardDarkColor
-                              : primaryExtraLight,
-                          width: 1)),
-                  border: OutlineInputBorder(
-                      borderRadius: radius(24),
-                      borderSide: BorderSide(
-                          color: appStore.isDarkModeOn
-                              ? cardDarkColor
-                              : primaryColor,
-                          width: 1)),
-                  filled: true,
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: radius(24),
-                      borderSide:
-                          BorderSide(color: Colors.transparent, width: 0)),
-                  fillColor:
-                      appStore.isDarkModeOn ? cardDarkColor : primaryExtraLight,
-                  contentPadding:
-                      EdgeInsets.only(top: 10, bottom: 10, left: 10, right: 10),
-                  enabled: true),
-              isDense: true,
-              hint: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  data!.propertyCity!.isNotEmpty
-                      ? userStore.cityName.isEmpty
-                          ? Text(data!.propertyCity![0].name.toString(),
-                              style: primaryTextStyle(color: primaryColor))
-                          : Text(userStore.cityName,
-                                  style: primaryTextStyle(color: primaryColor),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis)
-                              .expand()
-                      : Text(language.selectCity,
-                          style: primaryTextStyle(color: primaryColor)),
-                ],
-              ),
-              dropdownColor: context.cardColor,
-              items: data!.propertyCity!.map((dashR.PropertyCity e) {
-                return DropdownMenuItem<String>(
-                  value: data!.propertyCity!.contains(userStore.cityName)
-                      ? userStore.cityName
-                      : e.name.validate(),
-                  child: Text(e.name.validate(),
-                      style: primaryTextStyle(color: primaryColor),
-                      overflow: TextOverflow.ellipsis,
-                      softWrap: true,
-                      textAlign: TextAlign.end),
-                );
-              }).toList(),
-              onChanged: (String? value) async {
-                cityController.text = value ?? '';
-
-                setState(() {});
-              },
-            ),
-          ).paddingSymmetric(vertical: 8)
-        : SizedBox();
   }
 
   String formNum(String s) {

@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:orex/models/filter_category_model.dart';
+import 'package:orex/models/get_property_developer.dart';
 
 import '../extensions/extension_util/int_extensions.dart';
 import '../extensions/extension_util/string_extensions.dart';
@@ -166,6 +167,18 @@ Future<List<FilterCategoryModel>> getFilterCategoryApi(int categoryId) async {
 
   if (response is List) {
     return response.map((item) => FilterCategoryModel.fromJson(item)).toList();
+  } else {
+    throw Exception("Unexpected response format");
+  }
+}
+
+Future<PropertyResponseModel> getPropertyForDeveloper(int categoryID) async {
+  final response = await handleResponse(
+    await buildHttpResponse('my-property-by-category?category_id=$categoryID'),
+  );
+
+  if (response is Map<String, dynamic>) {
+    return PropertyResponseModel.fromJson(response);
   } else {
     throw Exception("Unexpected response format");
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:orex/components/table.dart';
 import '../components/HtmlWidget.dart';
 import '../extensions/decorations.dart';
 import '../extensions/extension_util/context_extensions.dart';
@@ -30,35 +31,55 @@ class _SliderDetailsScreenState extends State<SliderDetailsScreen> {
     return AnnotatedRegion(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: appStore.isDarkModeOn ? Brightness.light : Brightness.light,
-        systemNavigationBarIconBrightness: appStore.isDarkModeOn ? Brightness.light : Brightness.light,
+        statusBarIconBrightness:
+            appStore.isDarkModeOn ? Brightness.light : Brightness.light,
+        systemNavigationBarIconBrightness:
+            appStore.isDarkModeOn ? Brightness.light : Brightness.light,
       ),
       child: Scaffold(
-        appBar: appBarWidget(widget.slider.propertyName.validate(), context1: context, titleSpace: 0),
+        appBar: appBarWidget(widget.slider.name.validate(),
+            context1: context, titleSpace: 0),
         body: SingleChildScrollView(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            cachedImage(widget.slider.sliderImage.validate(), height: context.height() * 0.3, width: context.width(), fit: BoxFit.fill).cornerRadiusWithClipRRect(12).paddingSymmetric(horizontal: 16),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            cachedImage(widget.slider.sliderImage.validate(),
+                    height: context.height() * 0.3,
+                    width: context.width(),
+                    fit: BoxFit.fill)
+                .cornerRadiusWithClipRRect(12)
+                .paddingSymmetric(horizontal: 16),
             20.height,
             Container(
                 padding: EdgeInsets.all(16),
-                decoration: boxDecorationWithRoundedCorners(borderRadius: radius(12), backgroundColor: primaryVariant),
+                decoration: boxDecorationWithRoundedCorners(
+                    borderRadius: radius(12), backgroundColor: primaryVariant),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(language.tapToView, style: primaryTextStyle(color: Colors.black)),
+                        Text(language.tapToView,
+                            style: primaryTextStyle(color: Colors.black)),
                         4.height,
-                        Text(widget.slider.propertyName.validate(), style: boldTextStyle(size: 18, color: Colors.black)),
+                        Text(widget.slider.description.validate(),
+                            style:
+                                boldTextStyle(size: 18, color: Colors.black)),
+                        CustomAreaPricesTable(
+                          areaPrices: widget.slider.areaPrices!,
+                          onRowTap: (p0) {
+                            print('price ${p0.price}');
+                          },
+                        )
                       ],
                     ).expand(),
-                    Image.asset(ic_forward_arrow, height: 20, width: 20, fit: BoxFit.fill)
+                    Image.asset(ic_forward_arrow,
+                        height: 20, width: 20, fit: BoxFit.fill)
                   ],
                 )).onTap(() {
-              PropertyDetailScreen(
-                propertyId: widget.slider.propertyId,
-              ).launch(context);
+              // PropertyDetailScreen(
+              //   propertyId: widget.slider.propertyId,
+              // ).launch(context);
             }).paddingSymmetric(horizontal: 16),
             // HtmlWidget(postContent: widget.slider.description.validate()).paddingSymmetric(horizontal: 10)
           ]),

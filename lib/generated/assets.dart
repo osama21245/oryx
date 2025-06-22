@@ -3,7 +3,8 @@ class Assets {
   Assets._();
 
   static const String assetsIcAbout = 'assets/ic_about.png';
-  static const String assetsIcAdvertisementProfile = 'assets/ic_advertisement_profile.png';
+  static const String assetsIcAdvertisementProfile =
+      'assets/ic_advertisement_profile.png';
   static const String assetsIcArrowForward = 'assets/ic_arrow_forward.png';
   static const String assetsIcArticles = 'assets/ic_articles.png';
   static const String assetsIcBack = 'assets/ic_back.png';
@@ -13,12 +14,14 @@ class Assets {
   static const String assetsIcCall = 'assets/ic_call.png';
   static const String assetsIcCallOutline = 'assets/ic_call_outline.png';
   static const String assetsIcCallTrans = 'assets/ic_call_trans.png';
-  static const String assetsIcCancleSubscription = 'assets/ic_cancle_subscription.png';
+  static const String assetsIcCancleSubscription =
+      'assets/ic_cancle_subscription.png';
   static const String assetsIcCartLarge = 'assets/ic_cart_large.png';
   static const String assetsIcCategory = 'assets/ic_category.png';
   static const String assetsIcCategoryFill = 'assets/ic_category_fill.png';
   static const String assetsIcCloset = 'assets/ic_closet.png';
-  static const String assetsIcContinueSearchIcon = 'assets/ic_continue_search_icon.png';
+  static const String assetsIcContinueSearchIcon =
+      'assets/ic_continue_search_icon.png';
   static const String assetsIcDeletes = 'assets/ic_deletes.png';
   static const String assetsIcEditProfile = 'assets/ic_edit_profile.png';
   static const String assetsIcEditProperty = 'assets/ic_edit_property.png';
@@ -52,7 +55,8 @@ class Assets {
   static const String assetsIcProfileFill = 'assets/ic_profile_fill.png';
   static const String assetsIcProperties = 'assets/ic_properties.png';
   static const String assetsIcProperty = 'assets/ic_property.png';
-  static const String assetsIcPropertyProfile = 'assets/ic_property_profile.png';
+  static const String assetsIcPropertyProfile =
+      'assets/ic_property_profile.png';
   static const String assetsIcRadioBtn = 'assets/ic_radio_btn.png';
   static const String assetsIcRadioBtnFill = 'assets/ic_radio_btn_fill.png';
   static const String assetsIcRate = 'assets/ic_rate.png';
@@ -63,7 +67,8 @@ class Assets {
   static const String assetsIcSettings = 'assets/ic_settings.png';
   static const String assetsIcSignUp = 'assets/ic_sign_up.png';
   static const String assetsIcSubscriptions = 'assets/ic_subscriptions.png';
-  static const String assetsIcSuccessProperty = 'assets/ic_success_property.png';
+  static const String assetsIcSuccessProperty =
+      'assets/ic_success_property.png';
   static const String assetsIcTermsCo = 'assets/ic_terms_co.png';
   static const String assetsIcTheme = 'assets/ic_theme.png';
   static const String assetsIcTwitter = 'assets/ic_twitter.png';
@@ -95,5 +100,5 @@ class Assets {
   static const String flagsIcUs = 'assets/flags/ic_us.png';
   static const String flagsIcVi = 'assets/flags/ic_vi.png';
   static const String realEstateFlutterAssetsIcHome = 'assets/ic_home.png';
-
+  static const String joinus = 'assets/joinus.png';
 }

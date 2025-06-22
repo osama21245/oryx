@@ -25,7 +25,7 @@ Widget priceMeterFields(priceMeterList, context, {required Function setState}) {
           // حقل المساحة
           Expanded(
             child: AppTextField(
-              controller: item["meter"],
+              controller: item["area"],
               textFieldType: TextFieldType.NUMBER,
               keyboardType: TextInputType.number,
               decoration:
@@ -42,7 +42,7 @@ Widget priceMeterFields(priceMeterList, context, {required Function setState}) {
                 setState(() {
                   priceMeterList.add({
                     "price": TextEditingController(),
-                    "meter": TextEditingController(),
+                    "area": TextEditingController(),
                   });
                 });
               },
