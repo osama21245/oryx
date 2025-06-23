@@ -7,7 +7,9 @@ class CategoryListModel {
   CategoryListModel({this.pagination, this.data});
 
   CategoryListModel.fromJson(Map<String, dynamic> json) {
-    pagination = json['pagination'] != null ? new Pagination.fromJson(json['pagination']) : null;
+    pagination = json['pagination'] != null
+        ? new Pagination.fromJson(json['pagination'])
+        : null;
     if (json['data'] != null) {
       data = <CategoryData>[];
       json['data'].forEach((v) {
@@ -37,7 +39,14 @@ class CategoryData {
   String? createdAt;
   String? updatedAt;
 
-  CategoryData({this.id, this.name, this.status, this.categoryImage, this.amenityName, this.createdAt, this.updatedAt});
+  CategoryData(
+      {this.id,
+      this.name,
+      this.status,
+      this.categoryImage,
+      this.amenityName,
+      this.createdAt,
+      this.updatedAt});
 
   CategoryData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -82,7 +91,17 @@ class AmenityName {
   String? amenityImage;
   bool? isExpansionExpanded;
 
-  AmenityName({this.id, this.name, this.status, this.type, this.value, this.createdAt, this.updatedAt, this.amenityId, this.propertyId, this.isExpansionExpanded = false});
+  AmenityName(
+      {this.id,
+      this.name,
+      this.status,
+      this.type,
+      this.value,
+      this.createdAt,
+      this.updatedAt,
+      this.amenityId,
+      this.propertyId,
+      this.isExpansionExpanded = false});
 
   AmenityName.fromJson(Map<String, dynamic> json) {
     id = json['id'];

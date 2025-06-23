@@ -34,7 +34,9 @@ class DashboardResponse {
       this.advertisementProperty});
 
   DashboardResponse.fromJson(Map<String, dynamic> json) {
-    appSetting = json['app_setting'] != null ? new AppSetting.fromJson(json['app_setting']) : null;
+    appSetting = json['app_setting'] != null
+        ? new AppSetting.fromJson(json['app_setting'])
+        : null;
     if (json['category'] != null) {
       category = <Category>[];
       json['category'].forEach((v) {
@@ -101,7 +103,9 @@ class DashboardResponse {
         propertyCity!.add(PropertyCity.fromJson(v));
       });
     }
-    filterConfiguration = json['filter_configuration'] != null ? new FilterConfiguration.fromJson(json['filter_configuration']) : null;
+    filterConfiguration = json['filter_configuration'] != null
+        ? new FilterConfiguration.fromJson(json['filter_configuration'])
+        : null;
     if (json['advertisement_property'] != null) {
       advertisementProperty = <Property>[];
       json['advertisement_property'].forEach((v) {
@@ -128,31 +132,37 @@ class DashboardResponse {
     //   data['user_property'] = this.userProperty!.map((v) => v.toJson()).toList();
     // }
     if (this.ownerProperty != null) {
-      data['owner_property'] = this.ownerProperty!.map((v) => v.toJson()).toList();
+      data['owner_property'] =
+          this.ownerProperty!.map((v) => v.toJson()).toList();
     }
     if (this.property != null) {
       data['property'] = this.property!.map((v) => v.toJson()).toList();
     }
     if (this.nearByProperty != null) {
-      data['near_by_property'] = this.nearByProperty!.map((v) => v.toJson()).toList();
+      data['near_by_property'] =
+          this.nearByProperty!.map((v) => v.toJson()).toList();
     }
     if (this.fullyFurnishedProperty != null) {
-      data['fully_furnished_property'] = this.fullyFurnishedProperty!.map((v) => v.toJson()).toList();
+      data['fully_furnished_property'] =
+          this.fullyFurnishedProperty!.map((v) => v.toJson()).toList();
     }
     if (this.propertyType != null) {
-      data['property_type'] = this.propertyType!.map((v) => v.toJson()).toList();
+      data['property_type'] =
+          this.propertyType!.map((v) => v.toJson()).toList();
     }
     if (this.article != null) {
       data['article'] = this.article!.map((v) => v.toJson()).toList();
     }
     if (this.propertyCity != null) {
-      data['property_city'] = this.propertyCity!.map((v) => v.toJson()).toList();
+      data['property_city'] =
+          this.propertyCity!.map((v) => v.toJson()).toList();
     }
     if (this.filterConfiguration != null) {
       data['filter_configuration'] = this.filterConfiguration!.toJson();
     }
     if (this.advertisementProperty != null) {
-      data['advertisement_property'] = this.advertisementProperty!.map((v) => v.toJson()).toList();
+      data['advertisement_property'] =
+          this.advertisementProperty!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -232,10 +242,16 @@ class AppSetting {
     // }
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    termsCondition = json['terms_condition'] != null ? new TermsCondition.fromJson(json['terms_condition']) : null;
-    privacyPolicy = json['privacy_policy'] != null ? new TermsCondition.fromJson(json['privacy_policy']) : null;
+    termsCondition = json['terms_condition'] != null
+        ? new TermsCondition.fromJson(json['terms_condition'])
+        : null;
+    privacyPolicy = json['privacy_policy'] != null
+        ? new TermsCondition.fromJson(json['privacy_policy'])
+        : null;
     subscription = json['subscription'];
-    currencySetting = json['currency_setting'] != null ? new CurrencySetting.fromJson(json['currency_setting']) : null;
+    currencySetting = json['currency_setting'] != null
+        ? new CurrencySetting.fromJson(json['currency_setting'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -334,7 +350,14 @@ class Category {
   String? createdAt;
   String? updatedAt;
 
-  Category({this.id, this.name, this.status, this.categoryImage, this.amenityName, this.createdAt, this.updatedAt});
+  Category(
+      {this.id,
+      this.name,
+      this.status,
+      this.categoryImage,
+      this.amenityName,
+      this.createdAt,
+      this.updatedAt});
 
   Category.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -423,8 +446,23 @@ class MSlider {
   String? sliderImage;
   String? createdAt;
   String? updatedAt;
+  String? name;
+  List<AreaPrice>? areaPrices;
 
-  MSlider({this.id, this.categoryId, this.categoryName, this.propertyId, this.propertyName, this.description, this.status, this.sliderImage, this.createdAt, this.updatedAt});
+  MSlider({
+    this.id,
+    this.categoryId,
+    this.categoryName,
+    this.propertyId,
+    this.propertyName,
+    this.description,
+    this.status,
+    this.sliderImage,
+    this.createdAt,
+    this.updatedAt,
+    this.name,
+    this.areaPrices,
+  });
 
   MSlider.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -437,6 +475,12 @@ class MSlider {
     sliderImage = json['slider_image'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
+    name = json['name'];
+    if (json['area_prices'] != null) {
+      areaPrices = List<AreaPrice>.from(
+        json['area_prices'].map((x) => AreaPrice.fromJson(x)),
+      );
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -451,7 +495,33 @@ class MSlider {
     data['slider_image'] = this.sliderImage;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
+    data['name'] = name;
+    if (areaPrices != null) {
+      data['area_prices'] = areaPrices!.map((x) => x.toJson()).toList();
+    }
     return data;
+  }
+}
+
+class AreaPrice {
+  String? area;
+  int? price;
+
+  AreaPrice({this.area, this.price});
+
+  factory AreaPrice.fromJson(Map<String, dynamic> json) {
+    return AreaPrice(
+      area: json['area']?.toString(),
+      price: json['price'] is String
+          ? int.tryParse(json['price']) ?? 0
+          : json['price'],
+    );
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'area': area,
+      'price': price,
+    };
   }
 }
 
@@ -535,8 +605,9 @@ class Property {
       this.isFavourite,
       this.propertyTypeId,
       this.propertyType,
-      this.propertyFor,this.advertisementProperty,
-        this.advertisementPropertyDate});
+      this.propertyFor,
+      this.advertisementProperty,
+      this.advertisementPropertyDate});
 
   Property.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -589,7 +660,13 @@ class PropertyType {
   String? createdAt;
   String? updatedAt;
 
-  PropertyType({this.id, this.name, this.status, this.propertyTypeImage, this.createdAt, this.updatedAt});
+  PropertyType(
+      {this.id,
+      this.name,
+      this.status,
+      this.propertyTypeImage,
+      this.createdAt,
+      this.updatedAt});
 
   PropertyType.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -971,7 +1048,15 @@ class FilterConfiguration {
   num? minAgeOfProperty;
   num? maxAgeOfProperty;
 
-  FilterConfiguration({this.minPrice, this.maxPrice, this.minBrokerage, this.maxBrokerage, this.minSecurityDeposit, this.maxSecurityDeposit, this.minAgeOfProperty, this.maxAgeOfProperty});
+  FilterConfiguration(
+      {this.minPrice,
+      this.maxPrice,
+      this.minBrokerage,
+      this.maxBrokerage,
+      this.minSecurityDeposit,
+      this.maxSecurityDeposit,
+      this.minAgeOfProperty,
+      this.maxAgeOfProperty});
 
   FilterConfiguration.fromJson(Map<String, dynamic> json) {
     minPrice = json['min_price'];

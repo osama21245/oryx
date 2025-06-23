@@ -53,7 +53,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             transactionType: widget.transactionType,
           ),
     FavouriteScreen(),
-    if (userStore.userType == 'developer') DeveloperScreen(),
+    // if (userStore.userType == 'developer')
+    DeveloperScreen(),
     ProfileScreen(),
   ];
   // PickResult? selectedPlace;
@@ -241,7 +242,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         transactionType: widget.transactionType,
                       ),
                 FavouriteScreen(),
-                if (userStore.userType == 'developer') DeveloperScreen(),
+                // if (userStore.userType == 'developer')
+                DeveloperScreen(),
                 ProfileScreen(),
               ];
             });
@@ -268,14 +270,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   height: 24, width: 24, color: primaryColor),
               title: SizedBox(),
             ),
-            if (userStore.userType == 'developer')
-              BottomBarItem(
-                icon: Image.asset(ic_category,
-                    height: 24, width: 24, color: primaryColor),
-                selectedIcon: Image.asset(ic_category_fill,
-                    height: 24, width: 24, color: primaryColor),
-                title: SizedBox(),
-              ),
+            // if (userStore.userType == 'developer')
+            BottomBarItem(
+              icon: Image.asset(ic_category,
+                  height: 24, width: 24, color: primaryColor),
+              selectedIcon: Image.asset(ic_category_fill,
+                  height: 24, width: 24, color: primaryColor),
+              title: SizedBox(),
+            ),
             BottomBarItem(
               icon: Image.asset(ic_profile,
                   height: 24, width: 24, color: primaryColor),
