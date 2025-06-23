@@ -84,6 +84,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   TextEditingController videoUrlController = TextEditingController();
   TextEditingController ageOfPropertyController = TextEditingController();
   TextEditingController mapLocation = TextEditingController();
+  TextEditingController addressController = TextEditingController();
 
   FocusNode propertyNameFocus = FocusNode();
   FocusNode brokerageFocus = FocusNode();
@@ -323,7 +324,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     multiPartRequest.fields['city'] = cityController.text;
     multiPartRequest.fields['latitude'] = latitude.toString();
     multiPartRequest.fields['longitude'] = longitude.toString();
-    multiPartRequest.fields['address'] = mapLocation.text;
+    multiPartRequest.fields['address'] = addressController.text;
     multiPartRequest.fields['video_url'] = videoUrlController.text;
     multiPartRequest.fields['status'] = PROPERTY_ACTIVE;
     multiPartRequest.fields['premium_property'] = isPremium == true ? '1' : '0';
@@ -574,6 +575,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
               if (appStore.addPropertyIndex == 0) {
                 if (selectedCategoryId != null) {
                   appStore.addPropertyIndex = 1;
+                  getFilterCategory(); // Add this line to call getFilterCategory
                 } else {
                   toast(language.pleaseSelectCategory);
                 }
@@ -719,7 +721,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                     ),
                   ).onTap(() {
                     selectedCategoryId = categoryData[i].id!;
-                    getFilterCategory(); // Add this line to call getFilterCategory
+                    // getFilterCategory(); // Add this line to call getFilterCategory
                     setState(() {});
                   });
                 },
@@ -965,9 +967,18 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             //   decoration: defaultInputDecoration(context,
             //       label: language.enterMaintenanceCharge),
             // ),
-            // 20.height,
-            // RequiredValidationText(required: true, titleText: language.address),
-            // 10.height,
+            20.height,
+            RequiredValidationText(required: true, titleText: language.address),
+            10.height,
+            AppTextField(
+              textInputAction: TextInputAction.go,
+              controller: addressController,
+              textFieldType: TextFieldType.NAME,
+              keyboardType: TextInputType.streetAddress,
+              decoration:
+                  defaultInputDecoration(context, label: language.address),
+            ),
+            20.height,
             // GestureDetector(
             //   onTap: () async {
             //     // PlaceAddressModel? res = await GoogleMapScreen(
@@ -1249,7 +1260,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             // ),
             // 22.height,
           ],
-        ).paddingSymmetric(horizontal: 16),
+        ).visible(!appStore.isLoading).paddingSymmetric(horizontal: 16),
       ),
     );
   }

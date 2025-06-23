@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:orex/screens/join_us_screen.dart';
 
 import '../extensions/extension_util/widget_extensions.dart';
 import '../extensions/shared_pref.dart';
@@ -93,9 +94,7 @@ class SplashScreenState extends State<SplashScreen>
           isSplash: true,
         ).launch(context, isNewTask: true);
       } else {
-        DashboardScreen(
-          isSplash: true,
-        ).launch(context, isNewTask: false);
+        JoinUsScreen().launch(context, isNewTask: false);
         // MainScreen().launch(context, isNewTask: false);
       }
     }

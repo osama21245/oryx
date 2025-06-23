@@ -4,6 +4,8 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 // import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:maps_launcher/maps_launcher.dart';
+import 'package:orex/models/dashBoard_response.dart';
+import 'package:orex/screens/home_screen.dart';
 import '../components/premium_btn_component.dart';
 import '../extensions/colors.dart';
 import '../extensions/extension_util/bool_extensions.dart';
@@ -47,12 +49,16 @@ class PropertyDetailScreen extends StatefulWidget {
   final Function()? onCall;
   final bool? isSuccess;
   final bool? update;
+  final bool? fromSliderDetails;
+  final AreaPrice? areaPrice;
   final Function(bool)? onTap;
 
   PropertyDetailScreen(
       {required this.propertyId,
       this.onCall,
       this.isSuccess = false,
+      this.areaPrice,
+      this.fromSliderDetails = false,
       this.update,
       this.onTap});
 
@@ -193,6 +199,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: Text('تفاصيل الوحدة',
@@ -426,7 +433,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                               color: primaryColor,
                             ),
                             5.width,
-                            Text(mDetail!.data!.address.toString(),
+                            Text("${mDetail!.data!.address.toString() == null ? mDetail!.data!.address.toString() : ""} ${mDetail!.data!.city}",
                                     style: secondaryTextStyle(
                                         size: 16,
                                         color: black,
@@ -439,7 +446,6 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
 
                         10.height,
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             // Text(mDetail!.data!.name.toString(),
                             //     style: boldTextStyle(size: 18)),
@@ -448,14 +454,25 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                                     price: formatNumberString(
                                         mDetail!.data!.price!),
                                     textStyle: primaryTextStyle(
-                                        size: 18, color: primaryColor))
+                                        size: 18, color: primaryColor),
+                                  )
                                 : Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       PriceWidget(
                                           price: formatNumberString(
-                                              mDetail!.data!.price!),
+                                              widget.fromSliderDetails!
+                                                  ? widget.areaPrice!.price!
+                                                  : mDetail!.data!.price!),
                                           textStyle: primaryTextStyle(
                                               size: 18, color: primaryColor)),
+                                      SizedBox(
+                                        width: size.width * .5,
+                                      ),
+                                      widget.fromSliderDetails!
+                                          ? Text('${widget.areaPrice!.area} M')
+                                          : SizedBox.shrink(),
                                       // Text(
                                       //     '/ ' +
                                       //         durationWidget(
