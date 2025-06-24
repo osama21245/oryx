@@ -64,22 +64,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return screens;
   }
 
-  late List<Widget> tabs = [
-    // HomeScreen(),
-    // CategoryScreen(
-    //   transactionType: widget.transactionType,
-    // ),
-    isSplashActive
-        ? MainScreen()
-        : CategoryScreen(
-            transactionType: widget.transactionType,
-          ),
-    if (appStore.isLoggedIn) ...[
-      FavouriteScreen(),
-      DeveloperScreen(),
-      ProfileScreen(),
-    ]
-  ];
+  // late List<Widget> tabs = [
+  //   // HomeScreen(),
+  //   // CategoryScreen(
+  //   //   transactionType: widget.transactionType,
+  //   // ),
+  //   isSplashActive
+  //       ? MainScreen()
+  //       : CategoryScreen(
+  //           transactionType: widget.transactionType,
+  //         ),
+  //   if (appStore.isLoggedIn) ...[
+  //     FavouriteScreen(),
+  //     DeveloperScreen(),
+  //     ProfileScreen(),
+  //   ]
+  // ];
   // PickResult? selectedPlace;
   bool received = true;
   @override
@@ -265,31 +265,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
               LoginScreen().launch(context, isNewTask: false);
               return;
             }
-            var type = getStringAsync(userType).toString();
+            var type = userStore.userType;
             if (type != 'developer' && index == 2) {
               toast('must your role is developer by admins');
               return;
             }
             currentIndex = index;
             isSplashActive = true;
-            setState(() {
-              tabs = [
-                // HomeScreen(),
-                // CategoryScreen(
-                //   transactionType: widget.transactionType,
-                // ),
-                isSplashActive
-                    ? MainScreen()
-                    : CategoryScreen(
-                        transactionType: widget.transactionType,
-                      ),
-                if (appStore.isLoggedIn) ...[
-                  FavouriteScreen(),
-                  DeveloperScreen(),
-                  ProfileScreen(),
-                ]
-              ];
-            });
+            setState(() {});
           },
           items: [
             BottomBarItem(

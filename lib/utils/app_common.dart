@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:geolocator/geolocator.dart';
@@ -37,7 +38,13 @@ Widget mSuffixTextFieldIconWidget(String? img) {
 }
 
 Future<void> getUSerDetail(BuildContext context, int? id) async {
+  if (kDebugMode) {
+    print('ssssssssssstarttttttt');
+  }
   await getUserDataApi(id: id.validate()).then((value) async {
+    if (kDebugMode) {
+      print('asssssssssssssssss ${value.data}');
+    }
     userStore.setUserDetail(value);
     userStore.setFirstName(value.data!.firstName.validate());
     userStore.setUserEmail(value.data!.email.validate());
@@ -300,7 +307,7 @@ setLogInValue() async {
     await userStore.setUserEmail(getStringAsync(EMAIL));
     await userStore.setFirstName(getStringAsync(FIRSTNAME));
     await userStore.setLastName(getStringAsync(LASTNAME));
-    await userStore.setUserType(getStringAsync(userType));
+    await userStore.setUserType(getStringAsync(USER_TYPE));
     await userStore.setUserPassword(getStringAsync(PASSWORD));
     await userStore.setUserImage(getStringAsync(USER_PROFILE_IMG));
     await userStore.setPhoneNo(getStringAsync(PHONE_NUMBER));

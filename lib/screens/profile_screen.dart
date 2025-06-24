@@ -742,9 +742,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             context1: context,
             showBack: false,
             bgColor: context.scaffoldBackgroundColor),
-        body: appStore.isLoggedIn && userStore.userResponse != null
-            ? buildLoggedInUI()
-            : buildGuestUI(),
+        body: appStore.isLoggedIn ? buildLoggedInUI() : buildGuestUI(),
       );
     });
   }
