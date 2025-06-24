@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:orex/screens/dashboard_screen.dart';
 import 'package:orex/screens/main_screen.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/otp_field_style.dart';
@@ -114,7 +115,8 @@ class _OTPScreenState extends State<OTPScreen> {
           userStore.setToken(value.data!.apiToken.validate());
           await getUSerDetail(context, value.data!.id.validate())
               .whenComplete(() {
-            MainScreen().launch(context, isNewTask: true);
+            // MainScreen().launch(context, isNewTask: true);
+            DashboardScreen().launch(context, isNewTask: true);
           });
         }
       }).catchError((e) async {

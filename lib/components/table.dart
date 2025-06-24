@@ -25,12 +25,16 @@ class CustomAreaPricesTable extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           color: Colors.grey.shade300,
           child: Row(
-            children: const [
+            children: [
               Expanded(
                 flex: 1,
                 child:
                     Text('Area', style: TextStyle(fontWeight: FontWeight.bold)),
               ),
+              // VerticalDivider(
+              //   width: 1,
+              //   color: Colors.black,
+              // ),
               Expanded(
                 flex: 1,
                 child: Text('Price',
@@ -56,9 +60,15 @@ class CustomAreaPricesTable extends StatelessWidget {
                 children: [
                   Expanded(
                     flex: 1,
-                    child: Text(item.area ?? '-',
+                    child: Text('${item.area} M',
                         style: const TextStyle(fontSize: 14)),
                   ),
+                  // Container(
+                  //   width: 1,
+                  //   height: 20,
+                  //   color: Colors.black, // Vertical line color
+                  //   margin: const EdgeInsets.symmetric(horizontal: 8),
+                  // ),
                   Expanded(
                     flex: 1,
                     child: Text('${item.price ?? 0}',

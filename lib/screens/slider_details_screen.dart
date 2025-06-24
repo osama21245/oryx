@@ -61,20 +61,29 @@ class _SliderDetailsScreenState extends State<SliderDetailsScreen> {
                       children: [
                         Text(language.tapToView,
                             style: primaryTextStyle(color: Colors.black)),
-                        4.height,
-                        Text(widget.slider.description.validate(),
-                            style:
-                                boldTextStyle(size: 18, color: Colors.black)),
+                        10.height,
                         CustomAreaPricesTable(
                           areaPrices: widget.slider.areaPrices!,
                           onRowTap: (p0) {
                             print('price ${p0.price}');
+                            PropertyDetailScreen(
+                              propertyId: widget.slider.propertyId,
+                              areaPrice: p0,
+                              fromSliderDetails: true,
+                            ).launch(context);
                           },
-                        )
+                        ),
+                        10.height,
+                        Text(language.description,
+                            style: primaryTextStyle(color: Colors.black)),
+                        4.height,
+                        Text(widget.slider.description.validate(),
+                            style:
+                                boldTextStyle(size: 18, color: Colors.black)),
                       ],
                     ).expand(),
-                    Image.asset(ic_forward_arrow,
-                        height: 20, width: 20, fit: BoxFit.fill)
+                    // Image.asset(ic_forward_arrow,
+                    //     height: 20, width: 20, fit: BoxFit.fill)
                   ],
                 )).onTap(() {
               // PropertyDetailScreen(
