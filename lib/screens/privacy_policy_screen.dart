@@ -18,15 +18,18 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
     return AnnotatedRegion(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: appStore.isDarkModeOn ? Brightness.light : Brightness.light,
-        systemNavigationBarIconBrightness: appStore.isDarkModeOn ? Brightness.light : Brightness.light,
+        statusBarIconBrightness:
+            appStore.isDarkModeOn ? Brightness.light : Brightness.light,
+        systemNavigationBarIconBrightness:
+            appStore.isDarkModeOn ? Brightness.light : Brightness.light,
       ),
       child: Scaffold(
-        appBar: appBarWidget(language.privacyPolicy, context1: context,titleSpace: 0),
+        appBar: appBarWidget(language.privacyPolicy,
+            context1: context, titleSpace: 0),
         body: SingleChildScrollView(
-            padding: EdgeInsets.zero,
-            // child: HtmlWidget(postContent: userStore.privacyPolicy).paddingSymmetric(horizontal: 10)
-            ),
+          padding: EdgeInsets.zero,
+          // child: HtmlWidget(postContent: userStore.privacyPolicy).paddingSymmetric(horizontal: 10)
+        ),
       ),
     );
   }

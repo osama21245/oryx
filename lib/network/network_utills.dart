@@ -73,7 +73,7 @@ Future<Response> buildHttpResponse(String endPoint,
 
       return response;
     } catch (e) {
-      throw 'somethingWentWrong';
+      throw 'somethingWentWrong ${e.toString()}';
     }
   } else {
     throw errorInternetNotAvailable;

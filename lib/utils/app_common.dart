@@ -292,23 +292,23 @@ String formatFilterNumberString(double priceValue) {
   return formattedPrice;
 }
 
-setLogInValue() {
+setLogInValue() async {
   userStore.setLogin(getBoolAsync(IS_LOGIN));
   if (userStore.isLoggedIn) {
-    userStore.setToken(getStringAsync(TOKEN));
-    userStore.setUserID(getIntAsync(USER_ID));
-    userStore.setUserEmail(getStringAsync(EMAIL));
-    userStore.setFirstName(getStringAsync(FIRSTNAME));
-    userStore.setLastName(getStringAsync(LASTNAME));
-    userStore.setUserType(getStringAsync(userType));
-    userStore.setUserPassword(getStringAsync(PASSWORD));
-    userStore.setUserImage(getStringAsync(USER_PROFILE_IMG));
-    userStore.setPhoneNo(getStringAsync(PHONE_NUMBER));
-    userStore.setDisplayName(getStringAsync(DISPLAY_NAME));
-    userStore.setGender(getStringAsync(GENDER));
-    userStore.setContactInfo(getIntAsync(CONTACT_INFO));
-    userStore.setAdvertisement(getIntAsync(ADVERTISEMENT));
-    userStore.setAddLimitCount(getIntAsync(ADD_PROPERTY));
+    await userStore.setToken(getStringAsync(TOKEN));
+    await userStore.setUserID(getIntAsync(USER_ID));
+    await userStore.setUserEmail(getStringAsync(EMAIL));
+    await userStore.setFirstName(getStringAsync(FIRSTNAME));
+    await userStore.setLastName(getStringAsync(LASTNAME));
+    await userStore.setUserType(getStringAsync(userType));
+    await userStore.setUserPassword(getStringAsync(PASSWORD));
+    await userStore.setUserImage(getStringAsync(USER_PROFILE_IMG));
+    await userStore.setPhoneNo(getStringAsync(PHONE_NUMBER));
+    await userStore.setDisplayName(getStringAsync(DISPLAY_NAME));
+    await userStore.setGender(getStringAsync(GENDER));
+    await userStore.setContactInfo(getIntAsync(CONTACT_INFO));
+    await userStore.setAdvertisement(getIntAsync(ADVERTISEMENT));
+    await userStore.setAddLimitCount(getIntAsync(ADD_PROPERTY));
     UserResponse? userDetail =
         UserResponse.fromJson(jsonDecode(getStringAsync(USER_DETAIL)));
 

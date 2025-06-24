@@ -454,5 +454,6 @@ abstract class UserStoreBase with Store {
     phoneNo = '';
     gender = '';
     age = '';
+    isLoggedIn = false;
   }
 }
