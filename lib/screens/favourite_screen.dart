@@ -28,7 +28,9 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
     super.initState();
     init();
     scrollController.addListener(() {
-      if (scrollController.position.pixels == scrollController.position.maxScrollExtent && !appStore.isLoading) {
+      if (scrollController.position.pixels ==
+              scrollController.position.maxScrollExtent &&
+          !appStore.isLoading) {
         if (page < numPage!) {
           page++;
           init();
@@ -63,7 +65,8 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: appBarWidget(language.favourite, context1: context, showBack: false, titleSpace: 16),
+        appBar: appBarWidget(language.favourite,
+            context1: context, showBack: false, titleSpace: 16),
         body: Stack(
           children: [
             mFavouriteProperty.isNotEmpty
@@ -75,6 +78,7 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                     itemCount: mFavouriteProperty.length,
                     itemBuilder: (context, i) {
                       return AdvertisementPropertyComponent(
+                        fromFav: true,
                         property: mFavouriteProperty[i],
                         isFullWidth: true,
                         onCall: () {
@@ -86,7 +90,9 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                         if (mFavouriteProperty[i].premiumProperty == 1) {
                           if (userStore.subscription == "1") {
                             if (userStore.isSubscribe != 0) {
-                              bool? res = await PropertyDetailScreen(propertyId: mFavouriteProperty[i].id).launch(context);
+                              bool? res = await PropertyDetailScreen(
+                                      propertyId: mFavouriteProperty[i].id)
+                                  .launch(context);
                               if (res == true) {
                                 init();
                               }
@@ -94,13 +100,17 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                               SubscribeScreen().launch(context);
                             }
                           } else {
-                            bool? res = await PropertyDetailScreen(propertyId: mFavouriteProperty[i].id).launch(context);
+                            bool? res = await PropertyDetailScreen(
+                                    propertyId: mFavouriteProperty[i].id)
+                                .launch(context);
                             if (res == true) {
                               init();
                             }
                           }
                         } else {
-                          bool? res = await PropertyDetailScreen(propertyId: mFavouriteProperty[i].id).launch(context);
+                          bool? res = await PropertyDetailScreen(
+                                  propertyId: mFavouriteProperty[i].id)
+                              .launch(context);
                           if (res == true) {
                             init();
                           }
@@ -108,7 +118,8 @@ class _FavouriteScreenState extends State<FavouriteScreen> {
                         setState(() {});
                       }).paddingBottom(16);
                     })
-                : NoDataScreen(mTitle: language.resultNotFound).visible(!appStore.isLoading),
+                : NoDataScreen(mTitle: language.resultNotFound)
+                    .visible(!appStore.isLoading),
             Loader().center().visible(appStore.isLoading)
           ],
         ));

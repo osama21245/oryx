@@ -196,6 +196,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
   //   }
   //   return Future.value(true);
   // }
+  CarouselSliderController _carouselController = CarouselSliderController();
 
   @override
   Widget build(BuildContext context) {
@@ -222,6 +223,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                       alignment: Alignment.topRight,
                       children: [
                         CarouselSlider(
+                          carouselController: _carouselController,
                           items:
                               mDetail!.data!.propertyGallary!.map((imageUrl) {
                             return Container(
@@ -257,10 +259,15 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: IconButton(
-                              icon: Icon(Icons.arrow_forward_ios,
-                                  color: primaryColor, size: 16),
+                              icon: Icon(
+                                  appStore.selectedLanguage == 'ar'
+                                      ? Icons.arrow_forward_ios
+                                      : Icons.arrow_back_ios_new,
+                                  color: primaryColor,
+                                  size: 16),
                               onPressed: () {
                                 setState(() {
+                                  _carouselController.previousPage();
                                   _currentIndex = (_currentIndex - 1) %
                                       mDetail!.data!.propertyGallary!.length;
                                   print('_currentIndex: $_currentIndex');
@@ -268,7 +275,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                               },
                             ),
                           ),
-                        ),
+                        ).visible(mDetail!.data!.propertyGallary!.length > 1),
                         Positioned(
                           right: 16,
                           top: context.height() * 0.15,
@@ -281,12 +288,16 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                             ),
                             child: IconButton(
                               icon: Icon(
-                                Icons.arrow_back_ios_new,
+                                appStore.selectedLanguage == 'ar'
+                                    ? Icons.arrow_back_ios_new
+                                    : Icons.arrow_forward_ios,
                                 color: primaryColor,
                                 size: 16,
                               ),
                               onPressed: () {
                                 setState(() {
+                                  _carouselController.nextPage();
+
                                   _currentIndex = (_currentIndex + 1) %
                                       mDetail!.data!.propertyGallary!.length;
                                   print('_currentIndex: $_currentIndex');
@@ -294,7 +305,7 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                               },
                             ),
                           ),
-                        ),
+                        ).visible(mDetail!.data!.propertyGallary!.length > 1),
                         // cachedImage(mDetail!.data!.propertyImage,
                         //         fit: BoxFit.fill,
                         //         height: context.height() * 0.34,

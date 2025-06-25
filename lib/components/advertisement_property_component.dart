@@ -20,9 +20,13 @@ class AdvertisementPropertyComponent extends StatefulWidget {
   final Property? property;
   final bool? isFullWidth;
   final Function? onCall;
+  final bool fromFav;
 
   AdvertisementPropertyComponent(
-      {this.property, this.isFullWidth = false, this.onCall});
+      {this.property,
+      this.isFullWidth = false,
+      this.onCall,
+      this.fromFav = false});
 
   @override
   State<AdvertisementPropertyComponent> createState() =>
@@ -90,7 +94,9 @@ class _AdvertisementPropertyComponentState
                           textStyle:
                               boldTextStyle(size: 18, color: primaryColor))
                       .expand(),
-                  fevIconWidget(widget.property!.isFavourite, context)
+                  fevIconWidget(
+                          widget.fromFav ? 1 : widget.property!.isFavourite,
+                          context)
                       .onTap(() {
                     setState(() {
                       setFavouriteApi(widget.property!.id);
@@ -120,7 +126,7 @@ class _AdvertisementPropertyComponentState
                   Image.asset(ic_map_point,
                       width: 24, height: 24, color: primaryColor),
                   4.width,
-                  Text(widget.property!.address.validate(),
+                  Text('${widget.property!.address.validate()} ',
                           maxLines: 3,
                           overflow: TextOverflow.ellipsis,
                           style: secondaryTextStyle(

@@ -270,7 +270,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               toast('must your role is developer by admins');
               return;
             }
-            currentIndex = index;
+            if (index == 2) {
+              DeveloperScreen().launch(context, isNewTask: false);
+            }
+
+            currentIndex = index == 2 ? 0 : index;
             isSplashActive = true;
             setState(() {});
           },

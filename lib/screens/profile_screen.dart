@@ -165,145 +165,145 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     setState(() {});
                   })
                 : SizedBox(),
-            Container(
-              width: context.width(),
-              padding: EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-              decoration: boxDecorationWithRoundedCorners(
-                backgroundColor:
-                    appStore.isDarkModeOn ? cardDarkColor : primaryExtraLight,
-                borderRadius: radiusOnly(
-                    topLeft: userStore.subscription == "1" && select
-                        ? 0
-                        : defaultRadius,
-                    topRight: userStore.subscription == "1" && select
-                        ? 0
-                        : defaultRadius,
-                    bottomLeft: defaultRadius,
-                    bottomRight: defaultRadius),
-              ),
-              // child: Row(
-              //   mainAxisSize: MainAxisSize.min,
-              //   children: [
-              //     getPlanWidget(
-              //         userStore.userResponse!.planLimitCount!
-              //             .remainingAddPropertyLimit
-              //             .validate()
-              //             .toString(),
-              //         userStore.userResponse!.planLimitCount!
-              //             .withExtraAddPropertyLimit
-              //             .validate()
-              //             .toString(),
-              //         userStore.subscriptionDetail!.subscriptionPlan != null
-              //             ? userStore.subscriptionDetail!.subscriptionPlan!
-              //                 .packageData!.addProperty
-              //                 .validate()
-              //             : 0,
-              //         userStore.addLimitCount,
-              //         language.addProperty, () {
-              //       if (userStore.subscription == "1") {
-              //         if (userStore.isSubscribe != 0) {
-              //           if (userStore.subscriptionDetail!.subscriptionPlan!
-              //                   .packageData!.addProperty
-              //                   .validate() ==
-              //               0) {
-              //             userStore.addLimitCount == 0
-              //                 ? LimitScreen(limit: "add_property")
-              //                     .launch(context)
-              //                 : AddPropertyHistoryScreen(history: true)
-              //                     .launch(context);
-              //           } else {
-              //             AddPropertyHistoryScreen(history: true)
-              //                 .launch(context);
-              //           }
-              //         } else {
-              //           SubscribeScreen().launch(context);
-              //         }
-              //       } else {
-              //         AddPropertyHistoryScreen(history: true).launch(context);
-              //       }
-              //     }, ic_profile_property),
-              //     14.width,
-              //     getPlanWidget(
-              //         userStore.userResponse!.planLimitCount!
-              //             .remainingAdvertisementPropertyLimit
-              //             .validate()
-              //             .toString(),
-              //         userStore.userResponse!.planLimitCount!
-              //             .withExtraAdvertisementLimit
-              //             .validate()
-              //             .toString(),
-              //         userStore.subscriptionDetail!.subscriptionPlan != null
-              //             ? userStore.subscriptionDetail!.subscriptionPlan!
-              //                 .packageData!.advertisement
-              //                 .validate()
-              //             : 0,
-              //         userStore.advertisement,
-              //         language.advertisement, () {
-              //       if (userStore.subscription == "1") {
-              //         if (userStore.isSubscribe != 0) {
-              //           if (userStore.subscriptionDetail!.subscriptionPlan!
-              //                   .packageData!.advertisement
-              //                   .validate() ==
-              //               0) {
-              //             userStore.advertisement == 0
-              //                 ? LimitScreen(limit: "advertisement_property")
-              //                     .launch(context)
-              //                 : AddPropertyHistoryScreen(history: false)
-              //                     .launch(context);
-              //           } else {
-              //             AddPropertyHistoryScreen(history: false)
-              //                 .launch(context);
-              //           }
-              //         } else {
-              //           SubscribeScreen().launch(context);
-              //         }
-              //       } else {
-              //         AddPropertyHistoryScreen(history: false)
-              //             .launch(context);
-              //         // AdvertisementHistoryScreen().launch(context);
-              //       }
-              //     }, ic_profile_advertisement),
-              //     14.width,
-              //     // 16.width.visible(userStore.subscription == "1"),
-              //     getPlanWidget(
-              //         userStore.userResponse!.planLimitCount!
-              //             .remainingViewPropertyLimit
-              //             .validate()
-              //             .toString(),
-              //         userStore.userResponse!.planLimitCount!
-              //             .withExtraPropertyLimit
-              //             .validate()
-              //             .toString(),
-              //         userStore.subscriptionDetail!.subscriptionPlan != null
-              //             ? userStore.subscriptionDetail!.subscriptionPlan!
-              //                 .packageData!.property
-              //                 .validate()
-              //             : 0,
-              //         userStore.contactInfo,
-              //         language.contactInfo, () {
-              //       if (userStore.subscription == "1") {
-              //         if (userStore.isSubscribe != 0) {
-              //           if (userStore.subscriptionDetail!.subscriptionPlan!
-              //                   .packageData!.property
-              //                   .validate() ==
-              //               0) {
-              //             userStore.contactInfo == 0
-              //                 ? LimitScreen(limit: "view_property")
-              //                     .launch(context)
-              //                 : PropertyContactInfoScreen().launch(context);
-              //           } else {
-              //             PropertyContactInfoScreen().launch(context);
-              //           }
-              //         } else {
-              //           SubscribeScreen().launch(context);
-              //         }
-              //       } else {
-              //         PropertyContactInfoScreen().launch(context);
-              //       }
-              //     }, ic_call_outlined),
-              //   ],
-              // ),
-            ).visible(select == true),
+            // Container(
+            //   width: context.width(),
+            //   padding: EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+            //   decoration: boxDecorationWithRoundedCorners(
+            //     backgroundColor:
+            //         appStore.isDarkModeOn ? cardDarkColor : primaryExtraLight,
+            //     borderRadius: radiusOnly(
+            //         topLeft: userStore.subscription == "1" && select
+            //             ? 0
+            //             : defaultRadius,
+            //         topRight: userStore.subscription == "1" && select
+            //             ? 0
+            //             : defaultRadius,
+            //         bottomLeft: defaultRadius,
+            //         bottomRight: defaultRadius),
+            //   ),
+            // child: Row(
+            //   mainAxisSize: MainAxisSize.min,
+            //   children: [
+            //     getPlanWidget(
+            //         userStore.userResponse!.planLimitCount!
+            //             .remainingAddPropertyLimit
+            //             .validate()
+            //             .toString(),
+            //         userStore.userResponse!.planLimitCount!
+            //             .withExtraAddPropertyLimit
+            //             .validate()
+            //             .toString(),
+            //         userStore.subscriptionDetail!.subscriptionPlan != null
+            //             ? userStore.subscriptionDetail!.subscriptionPlan!
+            //                 .packageData!.addProperty
+            //                 .validate()
+            //             : 0,
+            //         userStore.addLimitCount,
+            //         language.addProperty, () {
+            //       if (userStore.subscription == "1") {
+            //         if (userStore.isSubscribe != 0) {
+            //           if (userStore.subscriptionDetail!.subscriptionPlan!
+            //                   .packageData!.addProperty
+            //                   .validate() ==
+            //               0) {
+            //             userStore.addLimitCount == 0
+            //                 ? LimitScreen(limit: "add_property")
+            //                     .launch(context)
+            //                 : AddPropertyHistoryScreen(history: true)
+            //                     .launch(context);
+            //           } else {
+            //             AddPropertyHistoryScreen(history: true)
+            //                 .launch(context);
+            //           }
+            //         } else {
+            //           SubscribeScreen().launch(context);
+            //         }
+            //       } else {
+            //         AddPropertyHistoryScreen(history: true).launch(context);
+            //       }
+            //     }, ic_profile_property),
+            //     14.width,
+            //     getPlanWidget(
+            //         userStore.userResponse!.planLimitCount!
+            //             .remainingAdvertisementPropertyLimit
+            //             .validate()
+            //             .toString(),
+            //         userStore.userResponse!.planLimitCount!
+            //             .withExtraAdvertisementLimit
+            //             .validate()
+            //             .toString(),
+            //         userStore.subscriptionDetail!.subscriptionPlan != null
+            //             ? userStore.subscriptionDetail!.subscriptionPlan!
+            //                 .packageData!.advertisement
+            //                 .validate()
+            //             : 0,
+            //         userStore.advertisement,
+            //         language.advertisement, () {
+            //       if (userStore.subscription == "1") {
+            //         if (userStore.isSubscribe != 0) {
+            //           if (userStore.subscriptionDetail!.subscriptionPlan!
+            //                   .packageData!.advertisement
+            //                   .validate() ==
+            //               0) {
+            //             userStore.advertisement == 0
+            //                 ? LimitScreen(limit: "advertisement_property")
+            //                     .launch(context)
+            //                 : AddPropertyHistoryScreen(history: false)
+            //                     .launch(context);
+            //           } else {
+            //             AddPropertyHistoryScreen(history: false)
+            //                 .launch(context);
+            //           }
+            //         } else {
+            //           SubscribeScreen().launch(context);
+            //         }
+            //       } else {
+            //         AddPropertyHistoryScreen(history: false)
+            //             .launch(context);
+            //         // AdvertisementHistoryScreen().launch(context);
+            //       }
+            //     }, ic_profile_advertisement),
+            //     14.width,
+            //     // 16.width.visible(userStore.subscription == "1"),
+            //     getPlanWidget(
+            //         userStore.userResponse!.planLimitCount!
+            //             .remainingViewPropertyLimit
+            //             .validate()
+            //             .toString(),
+            //         userStore.userResponse!.planLimitCount!
+            //             .withExtraPropertyLimit
+            //             .validate()
+            //             .toString(),
+            //         userStore.subscriptionDetail!.subscriptionPlan != null
+            //             ? userStore.subscriptionDetail!.subscriptionPlan!
+            //                 .packageData!.property
+            //                 .validate()
+            //             : 0,
+            //         userStore.contactInfo,
+            //         language.contactInfo, () {
+            //       if (userStore.subscription == "1") {
+            //         if (userStore.isSubscribe != 0) {
+            //           if (userStore.subscriptionDetail!.subscriptionPlan!
+            //                   .packageData!.property
+            //                   .validate() ==
+            //               0) {
+            //             userStore.contactInfo == 0
+            //                 ? LimitScreen(limit: "view_property")
+            //                     .launch(context)
+            //                 : PropertyContactInfoScreen().launch(context);
+            //           } else {
+            //             PropertyContactInfoScreen().launch(context);
+            //           }
+            //         } else {
+            //           SubscribeScreen().launch(context);
+            //         }
+            //       } else {
+            //         PropertyContactInfoScreen().launch(context);
+            //       }
+            //     }, ic_call_outlined),
+            //   ],
+            // ),
+            // ).visible(select == true),
             14.height,
             // mSettingOption(language.myProperty, ic_my_properties, () {
             //   MyPropertiesScreen().launch(context);

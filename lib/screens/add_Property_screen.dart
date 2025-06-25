@@ -292,7 +292,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   Future saveProperty() async {
     hideKeyboard(context);
     appStore.setLoading(true);
-
+    setState(() {});
     MultipartRequest multiPartRequest = !widget.updateProperty.validate()
         ? await getMultiPartRequest('property-save')
         : await getMultiPartRequest('property-update/${widget.pId}');
@@ -563,75 +563,84 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             Loader().center().visible(appStore.isLoading),
           ],
         ),
-        bottomNavigationBar: AppButton(
-          text: appStore.addPropertyIndex == 0 || appStore.addPropertyIndex == 1
-              ? language.Continue
-              : language.submit,
-          width: context.width(),
-          color: primaryColor,
-          textColor: Colors.white,
-          onTap: () {
-            try {
-              if (appStore.addPropertyIndex == 0) {
-                if (selectedCategoryId != null) {
-                  appStore.addPropertyIndex = 1;
-                  getFilterCategory(); // Add this line to call getFilterCategory
-                } else {
-                  toast(language.pleaseSelectCategory);
-                }
-              } else if (appStore.addPropertyIndex == 1) {
-                if (mSecondComponentFormKey.currentState!.validate()) {
-                  if (widget.propertyFor == 0 || widget.propertyFor == 2) {
-                    if (priceDurationValue != null && selectedBhkIndex != null
-                        //  &&
-                        // latitude != null &&
-                        // longitude != null &&
-                        // mapLocation.text.isNotEmpty
-                        ) {
-                      appStore.addPropertyIndex = 2;
-                    } else {
-                      if (priceDurationValue.isEmptyOrNull)
-                        toast(language.pleaseSelectPriceDuration);
-                      if (mainImagePath.isEmptyOrNull)
-                        toast(language.pleaseSelectMainPicture);
-                      if (selectedImages.isEmpty)
-                        toast(language.pleaseSelectOtherPicture);
-                      if (selectedBhkIndex == null)
-                        toast(language.pleaseSelectBHK);
-                      // if (mapLocation.text.isEmpty) toast(language.pleaseSelectAddress);
-                    }
-                  } else {
-                    print('dddddddddddddddddddddddddd');
-                    if (selectedImages.isNotEmpty &&
-                        mainImagePath != null &&
-                        selectedBhkIndex != null) {
-                      appStore.addPropertyIndex = 2;
+        bottomNavigationBar: appStore.isLoading
+            ? CircularProgressIndicator().center()
+            : AppButton(
+                text: appStore.addPropertyIndex == 0 ||
+                        appStore.addPropertyIndex == 1
+                    ? language.Continue
+                    : language.submit,
+                width: context.width(),
+                color: primaryColor,
+                textColor: Colors.white,
+                onTap: appStore.isLoading
+                    ? null
+                    : () {
+                        try {
+                          if (appStore.addPropertyIndex == 0) {
+                            if (selectedCategoryId != null) {
+                              appStore.addPropertyIndex = 1;
+                              getFilterCategory(); // Add this line to call getFilterCategory
+                            } else {
+                              toast(language.pleaseSelectCategory);
+                            }
+                          } else if (appStore.addPropertyIndex == 1) {
+                            if (mSecondComponentFormKey.currentState!
+                                .validate()) {
+                              if (widget.propertyFor == 0 ||
+                                  widget.propertyFor == 2) {
+                                if (priceDurationValue != null &&
+                                        selectedBhkIndex != null
+                                    //  &&
+                                    // latitude != null &&
+                                    // longitude != null &&
+                                    // mapLocation.text.isNotEmpty
+                                    ) {
+                                  appStore.addPropertyIndex = 2;
+                                } else {
+                                  if (priceDurationValue.isEmptyOrNull)
+                                    toast(language.pleaseSelectPriceDuration);
+                                  if (mainImagePath.isEmptyOrNull)
+                                    toast(language.pleaseSelectMainPicture);
+                                  if (selectedImages.isEmpty)
+                                    toast(language.pleaseSelectOtherPicture);
+                                  if (selectedBhkIndex == null)
+                                    toast(language.pleaseSelectBHK);
+                                  // if (mapLocation.text.isEmpty) toast(language.pleaseSelectAddress);
+                                }
+                              } else {
+                                print('dddddddddddddddddddddddddd');
+                                if (selectedImages.isNotEmpty &&
+                                    mainImagePath != null &&
+                                    selectedBhkIndex != null) {
+                                  appStore.addPropertyIndex = 2;
 
-                      setState(() {});
-                    } else {
-                      if (mainImagePath == null)
-                        toast(language.pleaseSelectMainPicture);
-                      if (selectedImages.isEmpty)
-                        toast(language.pleaseSelectOtherPicture);
-                      if (selectedBhkIndex == null)
-                        toast(language.pleaseSelectBHK);
-                    }
-                  }
-                }
-                log('Selected index $selectedCategoryId');
-                addSelectedCategoryData();
-              } else {
-                if (mThirdComponentFormKey.currentState!.validate()) {
-                  saveProperty();
-                  selectedOptions.clear();
-                }
-              }
-              setState(() {});
-            } catch (error) {
-              print('errooooooooo$error');
-            }
-          },
-        ).paddingOnly(right: 16, bottom: 16, left: 16, top: 0),
+                                  setState(() {});
+                                } else {
+                                  if (mainImagePath == null)
+                                    toast(language.pleaseSelectMainPicture);
+                                  if (selectedImages.isEmpty)
+                                    toast(language.pleaseSelectOtherPicture);
+                                  if (selectedBhkIndex == null)
+                                    toast(language.pleaseSelectBHK);
+                                }
+                              }
+                            }
+                            log('Selected index $selectedCategoryId');
+                            addSelectedCategoryData();
+                          } else {
+                            if (mThirdComponentFormKey.currentState!
+                                .validate()) {
+                              saveProperty();
+                              selectedOptions.clear();
+                            }
+                          }
+                          setState(() {});
+                        } catch (error) {
+                          print('errooooooooo$error');
+                        }
+                      },
+              ).paddingOnly(right: 16, bottom: 16, left: 16, top: 0),
       );
     });
   }
@@ -1060,21 +1069,21 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             //   ],
             // ),
             // 10.height,
-            AppTextField(
-              readOnly: mapLocation.text.isEmpty ? true : false,
-              isValidationRequired: true,
-              textInputAction: TextInputAction.go,
-              controller: cityController,
-              focus: cityFocus,
-              textFieldType: TextFieldType.NAME,
-              keyboardType: TextInputType.streetAddress,
-              decoration: defaultInputDecoration(context, label: language.city),
-              onTap: () async {
-                if (mapLocation.text.isEmpty) {
-                  toast(language.pleaseChooseAddressFromMap);
-                }
-              },
-            ),
+            // AppTextField(
+            //   readOnly: mapLocation.text.isEmpty ? true : false,
+            //   isValidationRequired: true,
+            //   textInputAction: TextInputAction.go,
+            //   controller: cityController,
+            //   focus: cityFocus,
+            //   textFieldType: TextFieldType.NAME,
+            //   keyboardType: TextInputType.streetAddress,
+            //   decoration: defaultInputDecoration(context, label: language.city),
+            //   onTap: () async {
+            //     if (mapLocation.text.isEmpty) {
+            //       toast(language.pleaseChooseAddressFromMap);
+            //     }
+            //   },
+            // ),
             citySelectionWidget(),
             // 20.height,
             RequiredValidationText(
