@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:orex/extensions/common.dart';
 import 'package:orex/screens/developer_screen.dart';
+import 'package:orex/screens/login_screen.dart';
 import 'package:orex/screens/main_screen.dart';
 // import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import '../components/add_property_dialouge.dart';
@@ -42,21 +44,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int currentIndex = 0;
 
   bool isSplashActive = true;
-  late List<Widget> tabs = [
-    // HomeScreen(),
-    // CategoryScreen(
-    //   transactionType: widget.transactionType,
-    // ),
-    isSplashActive
-        ? MainScreen()
-        : CategoryScreen(
-            transactionType: widget.transactionType,
-          ),
-    FavouriteScreen(),
-    // if (userStore.userType == 'developer')
-    DeveloperScreen(),
-    ProfileScreen(),
-  ];
+  List<Widget> getTabs() {
+    List<Widget> screens = [];
+
+    screens.add(
+      isSplashActive
+          ? MainScreen()
+          : CategoryScreen(transactionType: widget.transactionType),
+    );
+
+    if (appStore.isLoggedIn) {
+      screens.add(FavouriteScreen());
+      screens.add(DeveloperScreen());
+    }
+
+    // ✳️ إضافة Profile دومًا بدون شرط تسجيل الدخول
+    screens.add(ProfileScreen());
+
+    return screens;
+  }
+
+  // late List<Widget> tabs = [
+  //   // HomeScreen(),
+  //   // CategoryScreen(
+  //   //   transactionType: widget.transactionType,
+  //   // ),
+  //   isSplashActive
+  //       ? MainScreen()
+  //       : CategoryScreen(
+  //           transactionType: widget.transactionType,
+  //         ),
+  //   if (appStore.isLoggedIn) ...[
+  //     FavouriteScreen(),
+  //     DeveloperScreen(),
+  //     ProfileScreen(),
+  //   ]
+  // ];
   // PickResult? selectedPlace;
   bool received = true;
   @override
@@ -175,7 +198,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           child: AnimatedContainer(
               color: context.cardColor,
               duration: const Duration(seconds: 1),
-              child: tabs[currentIndex]
+              child: getTabs()[appStore.isLoggedIn
+                  ? currentIndex
+                  : currentIndex == 3
+                      ? 1
+                      : 0]
               // IndexedStack(index: currentIndex, children: tabs
               ),
         ),
@@ -183,6 +210,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           heroTag: language.addProperties,
           child: Icon(Icons.add, size: 44, color: Colors.white),
           onPressed: () {
+            if (!appStore.isLoggedIn) {
+              toast('Please login to access this section');
+              LoginScreen().launch(context, isNewTask: false);
+              return;
+            }
             userStore.subscription == "1"
                 ? userStore.isSubscribe != 0
                     ? userStore.subscriptionDetail!.subscriptionPlan!
@@ -228,25 +260,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
           hasNotch: true,
           fabLocation: StylishBarFabLocation.center,
           onTap: (index) {
+            if (!appStore.isLoggedIn && (index == 1 || index == 2)) {
+              toast('Please login to access this section');
+              LoginScreen().launch(context, isNewTask: false);
+              return;
+            }
+            var type = userStore.userType;
+            if (type != 'developer' && index == 2) {
+              toast('must your role is developer by admins');
+              return;
+            }
             currentIndex = index;
             isSplashActive = true;
-            setState(() {
-              tabs = [
-                // HomeScreen(),
-                // CategoryScreen(
-                //   transactionType: widget.transactionType,
-                // ),
-                isSplashActive
-                    ? MainScreen()
-                    : CategoryScreen(
-                        transactionType: widget.transactionType,
-                      ),
-                FavouriteScreen(),
-                // if (userStore.userType == 'developer')
-                DeveloperScreen(),
-                ProfileScreen(),
-              ];
-            });
+            setState(() {});
           },
           items: [
             BottomBarItem(

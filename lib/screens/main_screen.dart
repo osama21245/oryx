@@ -108,7 +108,7 @@ class _MainScreenState extends State<MainScreen> {
                 selectCityName = selectedCity;
                 userStore.setUserCity(selectCityName!).then((value) =>
                     ChooseTransactionTypeScreen()
-                        .launch(context, isNewTask: true));
+                        .launch(context, isNewTask: false));
 
                 // DashboardScreen().launch(context, isNewTask: true);
               }),

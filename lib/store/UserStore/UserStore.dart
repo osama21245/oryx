@@ -380,7 +380,12 @@ abstract class UserStoreBase with Store {
   @action
   Future<void> setUserType(String val, {bool isInitialization = false}) async {
     userType = val;
+    print(
+        'before isInitialization ${isInitialization} value ${val} key ${USER_TYPE}');
+
     if (!isInitialization) await setValue(USER_TYPE, val);
+    print(
+        'after isInitialization ${isInitialization} value ${val} key ${USER_TYPE}');
   }
 
   @action
@@ -454,5 +459,6 @@ abstract class UserStoreBase with Store {
     phoneNo = '';
     gender = '';
     age = '';
+    isLoggedIn = false;
   }
 }

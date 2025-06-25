@@ -50,7 +50,7 @@ class JoinUsScreen extends StatelessWidget {
               onTap: () {
                 DashboardScreen(
                   isSplash: true,
-                ).launch(context, isNewTask: true);
+                ).launch(context, isNewTask: false);
               },
             ).paddingOnly(right: 16, bottom: 16, left: 16, top: 0),
           ],

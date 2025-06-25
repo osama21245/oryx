@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:orex/models/filter_category_model.dart';
 import 'package:orex/models/get_property_developer.dart';
+import 'package:orex/screens/join_us_screen.dart';
 
 import '../extensions/extension_util/int_extensions.dart';
 import '../extensions/extension_util/string_extensions.dart';
@@ -440,9 +441,12 @@ Future<void> logout(BuildContext context, {bool isFromLogin = false}) async {
   await sharedPreferences.remove(USER_NAME);
   await sharedPreferences.remove(USER_ADDRESS);
   await sharedPreferences.remove(IS_OTP);
+  await appStore.clearStore();
+
   userStore.setLogin(false);
   if (!isFromLogin) {
-    LoginScreen().launch(context, isNewTask: true);
+    // LoginScreen().launch(context, isNewTask: true);
+    JoinUsScreen().launch(context, isNewTask: true);
     appStore.setLoading(true);
   }
 }

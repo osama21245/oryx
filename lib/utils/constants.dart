@@ -103,7 +103,7 @@ const USERNAME = "USERNAME";
 const USER_PROFILE_IMG = "USER_PROFILE_IMG";
 const PASSWORD = "PASSWORD";
 const IS_SUBSCRIPTION_SYSTEM = "IS_SUBSCRIPTION_SYSTEM";
-const userType = "user_type";
+// const userType = "user_type";
 const GOOGLE_API_KEY = "AIzaSyCMB9pHEn8CyRabBjalg5feG6u65qAogdY";
 
 //region amenityType

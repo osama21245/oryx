@@ -93,4 +93,16 @@ abstract class _AppStore with Store {
 
   @observable
   int addPropertyIndex = 0;
+
+  @action
+  Future<void> clearStore() async {
+    userEmail = '';
+    selectedLanguage = '';
+    isLoading = false;
+    isLoggedIn = false;
+    uid = '';
+    userProfile = '';
+    isDarkModeOn = false;
+    addPropertyIndex = 0;
+  }
 }

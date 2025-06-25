@@ -89,7 +89,7 @@ class _ChooseTransactionTypeScreenState
                       DashboardScreen(
                         transactionType: selectedTransactionTypeId,
                         isSplash: false,
-                      ).launch(context, isNewTask: true);
+                      ).launch(context, isNewTask: false);
                     },
                     child: TransactionTypeCard(
                         isSelected: isSale, imagePath: ic_sale, type: 'بيع'),
