@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:orex/extensions/app_button.dart';
 import 'package:orex/extensions/colors.dart';
 import 'package:orex/extensions/extension_util/context_extensions.dart';
+import 'package:orex/extensions/extension_util/int_extensions.dart';
 import 'package:orex/extensions/extension_util/widget_extensions.dart';
 import 'package:orex/main.dart';
 import 'package:orex/models/filter_category_model.dart';
@@ -51,6 +52,21 @@ class _FilterCategoryState extends State<FilterCategory> {
       } else {
         filterCategoryList.add(
             FilterCategoryModel(name: 'No Filters Available', options: []));
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => CategorySelectedScreen(
+                      categoryId: widget.categoryId ?? 0,
+                      categoryName: widget.categoryName ?? '',
+                      transactionType: widget.transactionType ?? 0,
+                      selectedOptions: selectedOptions,
+                    )));
+        // CategorySelectedScreen(
+        //   categoryId: widget.categoryId ?? 0,
+        //   categoryName: widget.categoryName ?? '',
+        //   transactionType: widget.transactionType ?? 0,
+        //   selectedOptions: selectedOptions,
+        // ).launch(context);
       }
       setState(() {});
       appStore.setLoading(false);
@@ -84,6 +100,7 @@ class _FilterCategoryState extends State<FilterCategory> {
                     ),
                     itemCount: filterCategoryList.length,
                   ),
+                  20.height,
                   AppButton(
                     padding: EdgeInsets.zero,
                     text: language.Continue,

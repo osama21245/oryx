@@ -99,6 +99,7 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
 
   void init() async {
     await getPropertyCategory();
+    appStore.addPropertyIndex = 0;
   }
 
   getProperty(categoryId) async {
@@ -196,6 +197,7 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
           } else {
             finish(context, true);
           }
+          appStore.addPropertyIndex = 0;
         }
       },
       onError: (error) {
@@ -322,8 +324,9 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
           print(appStore.addPropertyIndex.toString());
           setState(() {
             if (appStore.addPropertyIndex == 0) {
-              finish(context);
-              finish(context);
+              // finish(context);
+              // finish(context);
+              DashboardScreen().launch(context, isNewTask: true);
             } else {
               appStore.addPropertyIndex--;
             }

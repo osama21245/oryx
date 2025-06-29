@@ -417,6 +417,9 @@ String getYoutubeThumbnail(String url) {
 
 Widget fevIconWidget(int? isFavourite, BuildContext context,
     {Color? color, double? padding}) {
+  if (kDebugMode) {
+    print('isFaavvvvvvv ${isFavourite}');
+  }
   return Container(
     padding: EdgeInsets.all(padding ?? 4),
     decoration: boxDecorationWithRoundedCorners(
