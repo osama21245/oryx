@@ -10,6 +10,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:orex/components/payment_web_view.dart';
 import 'package:orex/models/filter_category_model.dart';
 
 import '../components/AmenityTextFiledComponent.dart';
@@ -290,6 +291,38 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
 
   // region Add Properties Api
   Future saveProperty() async {
+    bool? paymentConfirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('تأكيد الدفع', style: boldTextStyle()),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('هل تريد الدفع والحفظ؟', style: primaryTextStyle()),
+              10.height,
+              Text('سعر النشر: 200 جنية', style: secondaryTextStyle()),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text('إلغاء', style: primaryTextStyle(color: Colors.grey)),
+              onPressed: () => Navigator.pop(context, false),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+              ),
+              child: Text('دفع وحفظ',
+                  style: primaryTextStyle(color: Colors.white)),
+              onPressed: () => Navigator.pop(context, true),
+            ),
+          ],
+        );
+      },
+    );
+    if (paymentConfirmed != true) return;
     hideKeyboard(context);
     appStore.setLoading(true);
     setState(() {});
@@ -297,6 +330,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
         ? await getMultiPartRequest('property-save')
         : await getMultiPartRequest('property-update/${widget.pId}');
     // Build filter_options map
+    print('responsssssssssssssssssssss $multiPartRequest');
     Map<String, dynamic> filterOptionsMap = {};
     for (var filter in filterCategoryList) {
       var value = selectedOptions[filter.name ?? ''];
@@ -384,26 +418,56 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     multiPartRequest.headers.addAll(buildHeaderTokens());
     sendMultiPartRequest(
       multiPartRequest,
-      onSuccess: (data) async {
-        if ((data as String).isJson()) {
-          EPropertyBaseResponse res =
-              EPropertyBaseResponse.fromJson(jsonDecode(data));
-          print("Response is ${res.toJson()}");
-          appStore.setLoading(false);
-          if (res.message == "Property has been save successfully") {
-            toast(res.message.toString());
-            SuccessPropertyScreen(propertyId: res.propertyId).launch(context);
-            appStore.addPropertyIndex = 0;
-          } else if (res.message == "Plan Has Expired") {
-            toast(res.message.toString());
+      onSuccess: (dynamic data) async {
+        try {
+          // Check if data is a String and needs parsing
+          var jsonData = data is String ? jsonDecode(data) : data;
 
-            SubscribeScreen().launch(context);
+          if (jsonData != null && jsonData['data'] != null) {
+            String paymentUrl = jsonData['data'].toString();
+
+            // Navigate to WebView for payment
+            final paymentResult = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => WebViewScreenPay(uri: paymentUrl),
+              ),
+            );
+
+            // Handle payment result
+            if (paymentResult['status'] == true) {
+              if ((paymentResult as String).isJson()) {
+                EPropertyBaseResponse res =
+                    EPropertyBaseResponse.fromJson(jsonDecode(paymentResult));
+                appStore.setLoading(false);
+                SuccessPropertyScreen(
+                  propertyId: null,
+                ).launch(context);
+                if (res.message == "Property has been save successfully") {
+                  toast(res.message.toString());
+                  SuccessPropertyScreen(propertyId: res.propertyId)
+                      .launch(context);
+                  appStore.addPropertyIndex = 0;
+                } else if (res.message == "Plan Has Expired") {
+                  toast(res.message.toString());
+                  SubscribeScreen().launch(context);
+                } else {
+                  toast(res.message.toString());
+                  appStore.addPropertyIndex = 0;
+                  finish(context, true);
+                }
+              }
+            } else {
+              toast('Payment cancelled or failed');
+              appStore.addPropertyIndex = 0;
+              finish(context, true);
+            }
           } else {
-            toast(res.message.toString());
-
-            appStore.addPropertyIndex = 0;
-            finish(context, true);
+            toast('Invalid payment URL received');
           }
+        } catch (e) {
+          print('Error processing payment: $e');
+          toast('Error processing payment');
         }
         isAmenityIsEmpty = false;
       },
