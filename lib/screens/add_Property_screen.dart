@@ -214,7 +214,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   Widget filterItem(FilterCategoryModel? model) {
     print('model!.toJson(): ${model?.toJson()}');
     return DropdownButtonFormField<Option>(
-      icon: Icon(Icons.keyboard_arrow_down_rounded, color: black),
+      icon: Icon(Icons.keyboard_arrow_down_rounded,
+          color: appStore.isDarkModeOn ? textOnDarkMode : textOnLightMode),
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -435,32 +436,30 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             );
 
             // Handle payment result
-            if (paymentResult['status'] == true) {
-              if ((paymentResult as String).isJson()) {
-                EPropertyBaseResponse res =
-                    EPropertyBaseResponse.fromJson(jsonDecode(paymentResult));
-                appStore.setLoading(false);
-                SuccessPropertyScreen(
-                  propertyId: null,
-                ).launch(context);
-                if (res.message == "Property has been save successfully") {
+            if (paymentResult != null) {
+              try {
+                final Map<String, dynamic> result =
+                    Map<String, dynamic>.from(paymentResult);
+
+                print(
+                    '✅ status: ${result['status']} type: ${result['status'].runtimeType}');
+
+                if (result['status'] == true ||
+                    result['status'].toString().toLowerCase() == 'true') {
+                  // Success
+                  final res = EPropertyBaseResponse.fromJson(result);
                   toast(res.message.toString());
                   SuccessPropertyScreen(propertyId: res.propertyId)
                       .launch(context);
                   appStore.addPropertyIndex = 0;
-                } else if (res.message == "Plan Has Expired") {
-                  toast(res.message.toString());
-                  SubscribeScreen().launch(context);
                 } else {
-                  toast(res.message.toString());
+                  toast('❌ الدفع فشل: ${result['message']}');
                   appStore.addPropertyIndex = 0;
                   finish(context, true);
                 }
+              } catch (e) {
+                toast('⚠️ خطأ أثناء معالجة الدفع: $e');
               }
-            } else {
-              toast('Payment cancelled or failed');
-              appStore.addPropertyIndex = 0;
-              finish(context, true);
             }
           } else {
             toast('Invalid payment URL received');
@@ -570,141 +569,152 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   @override
   Widget build(BuildContext context) {
     return Observer(builder: (context) {
-      return Scaffold(
-        appBar: appBarWidget(
-          widget.updateProperty.validate()
-              ? language.updateProperty
-              : language.addProperty,
-          context1: context,
-          titleSpace: 0,
-          showBack: true,
-          actions: [
-            Text("${appStore.addPropertyIndex + 1}" + "/" + "3",
-                    style: secondaryTextStyle())
-                .paddingOnly(right: 30, top: 15),
-          ],
-          backWidget: Icon(Octicons.chevron_left, color: primaryColor, size: 28)
-              .onTap(() {
-            print(appStore.addPropertyIndex.toString());
-            setState(() {
-              if (appStore.addPropertyIndex == 0) {
-                finish(context);
-                finish(context);
-              } else {
-                appStore.addPropertyIndex--;
-              }
-            });
-          }),
-          elevation: 0,
-        ),
-        body: Stack(
-          children: [
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: List.generate(3, (i) {
-                    return Container(
-                      alignment: Alignment.center,
-                      height: 3,
-                      width: context.width() / 3.5,
-                      decoration: boxDecorationWithRoundedCorners(
-                          backgroundColor: appStore.addPropertyIndex >= i
-                              ? primaryColor
-                              : dividerColor),
-                    );
-                  }).toList(),
-                ).paddingSymmetric(horizontal: 12),
-                ListView(
-                  children: [
-                    if (appStore.addPropertyIndex == 0) addPropertyComponent1(),
-                    if (appStore.addPropertyIndex == 1) addPropertyComponent2(),
-                    if (appStore.addPropertyIndex == 2) addPropertyComponent3(),
-                  ],
-                ).expand()
-              ],
-            ),
-            Loader().center().visible(appStore.isLoading),
-          ],
-        ),
-        bottomNavigationBar: appStore.isLoading
-            ? CircularProgressIndicator().center()
-            : AppButton(
-                text: appStore.addPropertyIndex == 0 ||
-                        appStore.addPropertyIndex == 1
-                    ? language.Continue
-                    : language.submit,
-                width: context.width(),
-                color: primaryColor,
-                textColor: Colors.white,
-                onTap: appStore.isLoading
-                    ? null
-                    : () {
-                        try {
-                          if (appStore.addPropertyIndex == 0) {
-                            if (selectedCategoryId != null) {
-                              appStore.addPropertyIndex = 1;
-                              getFilterCategory(); // Add this line to call getFilterCategory
-                            } else {
-                              toast(language.pleaseSelectCategory);
-                            }
-                          } else if (appStore.addPropertyIndex == 1) {
-                            if (mSecondComponentFormKey.currentState!
-                                .validate()) {
-                              if (widget.propertyFor == 0 ||
-                                  widget.propertyFor == 2) {
-                                if (priceDurationValue != null &&
-                                        selectedBhkIndex != null
-                                    //  &&
-                                    // latitude != null &&
-                                    // longitude != null &&
-                                    // mapLocation.text.isNotEmpty
-                                    ) {
-                                  appStore.addPropertyIndex = 2;
+      return SafeArea(
+        child: Scaffold(
+          appBar: appBarWidget(
+            widget.updateProperty.validate()
+                ? language.updateProperty
+                : language.addProperty,
+            context1: context,
+            titleSpace: 0,
+            showBack: true,
+            actions: [
+              Text("${appStore.addPropertyIndex + 1}" + "/" + "3",
+                      style: secondaryTextStyle())
+                  .paddingOnly(right: 30, top: 15),
+            ],
+            backWidget:
+                Icon(Octicons.chevron_left, color: primaryColor, size: 28)
+                    .onTap(() {
+              print(appStore.addPropertyIndex.toString());
+              setState(() {
+                if (appStore.addPropertyIndex == 0) {
+                  finish(context);
+                  finish(context);
+                } else {
+                  appStore.addPropertyIndex--;
+                }
+              });
+            }),
+            elevation: 0,
+          ),
+          body: Stack(
+            children: [
+              Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: List.generate(3, (i) {
+                      return Container(
+                        alignment: Alignment.center,
+                        height: 3,
+                        width: context.width() / 3.5,
+                        decoration: boxDecorationWithRoundedCorners(
+                            backgroundColor: appStore.addPropertyIndex >= i
+                                ? primaryColor
+                                : dividerColor),
+                      );
+                    }).toList(),
+                  ).paddingSymmetric(horizontal: 12),
+                  ListView(
+                    children: [
+                      if (appStore.addPropertyIndex == 0)
+                        addPropertyComponent1(),
+                      if (appStore.addPropertyIndex == 1)
+                        addPropertyComponent2(),
+                      if (appStore.addPropertyIndex == 2)
+                        addPropertyComponent3(),
+                    ],
+                  ).expand()
+                ],
+              ),
+              Loader().center().visible(appStore.isLoading),
+            ],
+          ),
+          bottomNavigationBar: appStore.isLoading
+              ? CircularProgressIndicator().center()
+              : SafeArea(
+                  child: AppButton(
+                    text: appStore.addPropertyIndex == 0 ||
+                            appStore.addPropertyIndex == 1
+                        ? language.Continue
+                        : language.submit,
+                    width: context.width(),
+                    color: primaryColor,
+                    textColor: Colors.white,
+                    onTap: appStore.isLoading
+                        ? null
+                        : () {
+                            try {
+                              if (appStore.addPropertyIndex == 0) {
+                                if (selectedCategoryId != null) {
+                                  appStore.addPropertyIndex = 1;
+                                  getFilterCategory(); // Add this line to call getFilterCategory
                                 } else {
-                                  if (priceDurationValue.isEmptyOrNull)
-                                    toast(language.pleaseSelectPriceDuration);
-                                  if (mainImagePath.isEmptyOrNull)
-                                    toast(language.pleaseSelectMainPicture);
-                                  if (selectedImages.isEmpty)
-                                    toast(language.pleaseSelectOtherPicture);
-                                  if (selectedBhkIndex == null)
-                                    toast(language.pleaseSelectBHK);
-                                  // if (mapLocation.text.isEmpty) toast(language.pleaseSelectAddress);
+                                  toast(language.pleaseSelectCategory);
                                 }
-                              } else {
-                                print('dddddddddddddddddddddddddd');
-                                if (selectedImages.isNotEmpty &&
-                                    mainImagePath != null &&
-                                    selectedBhkIndex != null) {
-                                  appStore.addPropertyIndex = 2;
+                              } else if (appStore.addPropertyIndex == 1) {
+                                if (mSecondComponentFormKey.currentState!
+                                    .validate()) {
+                                  if (widget.propertyFor == 0 ||
+                                      widget.propertyFor == 2) {
+                                    if (priceDurationValue != null &&
+                                            selectedBhkIndex != null
+                                        //  &&
+                                        // latitude != null &&
+                                        // longitude != null &&
+                                        // mapLocation.text.isNotEmpty
+                                        ) {
+                                      appStore.addPropertyIndex = 2;
+                                    } else {
+                                      if (priceDurationValue.isEmptyOrNull)
+                                        toast(
+                                            language.pleaseSelectPriceDuration);
+                                      if (mainImagePath.isEmptyOrNull)
+                                        toast(language.pleaseSelectMainPicture);
+                                      if (selectedImages.isEmpty)
+                                        toast(
+                                            language.pleaseSelectOtherPicture);
+                                      if (selectedBhkIndex == null)
+                                        toast(language.pleaseSelectBHK);
+                                      // if (mapLocation.text.isEmpty) toast(language.pleaseSelectAddress);
+                                    }
+                                  } else {
+                                    print('dddddddddddddddddddddddddd');
+                                    if (selectedImages.isNotEmpty &&
+                                        mainImagePath != null &&
+                                        selectedBhkIndex != null) {
+                                      appStore.addPropertyIndex = 2;
 
-                                  setState(() {});
-                                } else {
-                                  if (mainImagePath == null)
-                                    toast(language.pleaseSelectMainPicture);
-                                  if (selectedImages.isEmpty)
-                                    toast(language.pleaseSelectOtherPicture);
-                                  if (selectedBhkIndex == null)
-                                    toast(language.pleaseSelectBHK);
+                                      setState(() {});
+                                    } else {
+                                      if (mainImagePath == null)
+                                        toast(language.pleaseSelectMainPicture);
+                                      if (selectedImages.isEmpty)
+                                        toast(
+                                            language.pleaseSelectOtherPicture);
+                                      if (selectedBhkIndex == null)
+                                        toast(language.pleaseSelectBHK);
+                                    }
+                                  }
+                                }
+                                log('Selected index $selectedCategoryId');
+                                addSelectedCategoryData();
+                              } else {
+                                if (mThirdComponentFormKey.currentState!
+                                    .validate()) {
+                                  saveProperty();
+                                  selectedOptions.clear();
                                 }
                               }
+                              setState(() {});
+                            } catch (error) {
+                              print('errooooooooo$error');
                             }
-                            log('Selected index $selectedCategoryId');
-                            addSelectedCategoryData();
-                          } else {
-                            if (mThirdComponentFormKey.currentState!
-                                .validate()) {
-                              saveProperty();
-                              selectedOptions.clear();
-                            }
-                          }
-                          setState(() {});
-                        } catch (error) {
-                          print('errooooooooo$error');
-                        }
-                      },
-              ).paddingOnly(right: 16, bottom: 16, left: 16, top: 0),
+                          },
+                  ).paddingOnly(right: 16, bottom: 20, left: 16, top: 0),
+                ),
+        ),
       );
     });
   }
@@ -779,7 +789,12 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                     child: Row(
                       children: [
                         cachedImage(categoryData[i].categoryImage,
-                                height: 30, width: 30, fit: BoxFit.fill)
+                                height: 30,
+                                width: 30,
+                                fit: BoxFit.fill,
+                                color: appStore.isDarkModeOn
+                                    ? textOnDarkMode
+                                    : textOnLightMode)
                             .cornerRadiusWithClipRRect(8),
                         10.width,
                         Text(categoryData[i].name.toString(),
@@ -1040,18 +1055,18 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             //   decoration: defaultInputDecoration(context,
             //       label: language.enterMaintenanceCharge),
             // ),
-            20.height,
-            RequiredValidationText(required: true, titleText: language.address),
-            10.height,
-            AppTextField(
-              textInputAction: TextInputAction.go,
-              controller: addressController,
-              textFieldType: TextFieldType.NAME,
-              keyboardType: TextInputType.streetAddress,
-              decoration:
-                  defaultInputDecoration(context, label: language.address),
-            ),
-            20.height,
+            // 20.height,
+            // RequiredValidationText(required: true, titleText: language.address),
+            // 10.height,
+            // AppTextField(
+            //   textInputAction: TextInputAction.go,
+            //   controller: addressController,
+            //   textFieldType: TextFieldType.NAME,
+            //   keyboardType: TextInputType.streetAddress,
+            //   decoration:
+            //       defaultInputDecoration(context, label: language.address),
+            // ),
+            // 20.height,
             // GestureDetector(
             //   onTap: () async {
             //     // PlaceAddressModel? res = await GoogleMapScreen(

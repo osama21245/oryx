@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../extensions/extension_util/context_extensions.dart';
 import '../extensions/extension_util/int_extensions.dart';
@@ -19,21 +20,39 @@ class SlidesComponents extends StatefulWidget {
 
 class _SlidesComponentsState extends State<SlidesComponents> {
   PageController pageController = PageController();
-  List<MSlider> slider = [];
+  late Timer _autoScrollTimer;
   int currentIndex = 0;
 
+  @override
   void initState() {
     super.initState();
-    init();
+    startAutoScroll();
   }
 
-  void init() async {
-    setState(() {});
+  void startAutoScroll() {
+    _autoScrollTimer = Timer.periodic(Duration(seconds: 4), (timer) {
+      if (widget.data == null || widget.data!.isEmpty) return;
+
+      currentIndex++;
+      if (currentIndex >= widget.data!.length) {
+        currentIndex = 0;
+      }
+
+      if (mounted) {
+        pageController.animateToPage(
+          currentIndex,
+          duration: Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 
   @override
-  void setState(fn) {
-    if (mounted) super.setState(fn);
+  void dispose() {
+    _autoScrollTimer.cancel();
+    pageController.dispose();
+    super.dispose();
   }
 
   @override
@@ -50,7 +69,10 @@ class _SlidesComponentsState extends State<SlidesComponents> {
             controller: pageController,
             physics: BouncingScrollPhysics(),
             itemBuilder: (context, i) {
-              return cachedImage(widget.data![i].sliderImage.validate(), height: context.height() * 0.2, fit: BoxFit.cover, width: context.width())
+              return cachedImage(widget.data![i].sliderImage.validate(),
+                      height: mHeight,
+                      fit: BoxFit.cover,
+                      width: context.width())
                   .cornerRadiusWithClipRRect(16)
                   .paddingOnly(right: 16, bottom: 8, left: 16)
                   .onTap(() {
@@ -58,8 +80,9 @@ class _SlidesComponentsState extends State<SlidesComponents> {
               });
             },
             onPageChanged: (int i) {
-              currentIndex = i;
-              setState(() {});
+              setState(() {
+                currentIndex = i;
+              });
             },
           ),
         ),

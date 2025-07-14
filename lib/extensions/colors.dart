@@ -12,6 +12,8 @@ const textPrimaryColor = Color(0xFF2E3033);
 const textSecondaryColor = Color(0xFF757575);
 const errorColor = Color(0xFFFF6347);
 const transparentColor = Color(0x00000000);
+const textOnLightMode = black;
+const textOnDarkMode = white;
 
 const whiteColor = Colors.white;
 const blackColor = Colors.black;
@@ -231,4 +233,3 @@ List<Color> lightColors = [
   Color(0xffece8fd),
   Color(0xffdcfaf2),
 ];
-

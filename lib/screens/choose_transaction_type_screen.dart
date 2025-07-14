@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:orex/components/transaction_type_card.dart';
+import 'package:orex/extensions/colors.dart';
 import 'package:orex/extensions/extension_util/widget_extensions.dart';
 import 'package:orex/screens/dashboard_screen.dart';
 import 'package:orex/screens/home_screen.dart';
@@ -126,7 +127,9 @@ class _ChooseTransactionTypeScreenState
                         fontWeight: FontWeight.w700,
                         fontSize: 24,
                         fontFamily: 'Cairo',
-                        color: Colors.black,
+                        color: appStore.isDarkModeOn
+                            ? textOnDarkMode
+                            : textOnLightMode,
                       ),
                     ).paddingOnly(top: 16, bottom: 16),
                   ),

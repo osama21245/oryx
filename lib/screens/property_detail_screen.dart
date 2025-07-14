@@ -447,7 +447,9 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
                             Text("${mDetail!.data!.address.toString() == null ? mDetail!.data!.address.toString() : ""} ${mDetail!.data!.city}",
                                     style: secondaryTextStyle(
                                         size: 16,
-                                        color: black,
+                                        color: appStore.isDarkModeOn
+                                            ? textOnDarkMode
+                                            : textOnLightMode,
                                         weight: FontWeight.w400),
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis)
@@ -765,7 +767,9 @@ class _PropertyDetailScreenState extends State<PropertyDetailScreen> {
         Text(
           mDetail!.data!.description.toString().capitalizeFirstLetter(),
           style: secondaryTextStyle(
-              size: 16, color: black, weight: FontWeight.w400),
+              size: 16,
+              color: appStore.isDarkModeOn ? textOnDarkMode : textOnLightMode,
+              weight: FontWeight.w400),
         ).visible(mDetail!.data!.description != null),
       ],
     ).paddingSymmetric(horizontal: 16);
