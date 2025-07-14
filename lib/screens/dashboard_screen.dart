@@ -28,7 +28,6 @@ import '../utils/constants.dart';
 import '../utils/images.dart';
 import 'category_screen.dart';
 import 'favourite_screen.dart';
-import 'home_screen.dart';
 import 'limit_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
