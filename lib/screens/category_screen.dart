@@ -134,7 +134,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
         // ).launch(context);
       },
       child: Container(
-        width: double.infinity,
+        width: context.width() * 0.42,
         padding: EdgeInsets.all(16),
         decoration: boxDecorationWithRoundedCorners(
           borderRadius: radius(12),
@@ -148,13 +148,19 @@ class _CategoryScreenState extends State<CategoryScreen> {
               height: 25,
               width: 25,
               fit: BoxFit.cover,
+              color: appStore.isDarkModeOn ? textOnDarkMode : textOnLightMode,
             ).cornerRadiusWithClipRRect(12),
             SizedBox(width: 16),
             Expanded(
+              flex: 6,
               child: Text(
                 category.name.toString().capitalizeFirstLetter(),
-                style: primaryTextStyle(size: 16, color: black),
-                maxLines: 2,
+                style: primaryTextStyle(
+                    size: 16,
+                    color: appStore.isDarkModeOn
+                        ? textOnDarkMode
+                        : textOnLightMode),
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),

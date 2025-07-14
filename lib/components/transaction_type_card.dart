@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:orex/extensions/colors.dart';
+import 'package:orex/main.dart';
 
 class TransactionTypeCard extends StatelessWidget {
   final String imagePath;
@@ -46,7 +48,11 @@ class TransactionTypeCard extends StatelessWidget {
             style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.w700,
-                color: isSelected ? Theme.of(context).primaryColor : null),
+                color: isSelected
+                    ? Theme.of(context).primaryColor
+                    : appStore.isDarkModeOn
+                        ? textOnDarkMode
+                        : textOnLightMode),
           ),
         ],
       ),

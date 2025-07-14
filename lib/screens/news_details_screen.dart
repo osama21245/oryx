@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+import 'package:orex/extensions/common.dart';
 import '../../components/app_bar_components.dart';
 import '../../extensions/extension_util/context_extensions.dart';
 import '../../extensions/extension_util/int_extensions.dart';
@@ -47,15 +48,25 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: appBarWidget("", context1: context, titleSpace: 0, actions: [
-          Icon(Ionicons.share_social, size: 20, color: primaryColor).paddingSymmetric(horizontal: 16).onTap(() {
-            Share.share(language.checkoutNewsArticles + " " + widget.articles.name.validate(), subject: widget.articles.name.validate());
+          Icon(Ionicons.share_social, size: 20, color: primaryColor)
+              .paddingSymmetric(horizontal: 16)
+              .onTap(() {
+            Share.share(
+                language.checkoutNewsArticles +
+                    " " +
+                    widget.articles.name.validate(),
+                subject: widget.articles.name.validate());
           })
         ]),
         body: SingleChildScrollView(
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Stack(
               children: [
-                cachedImage(widget.articles.articleImage.validate(), height: context.height() * 0.32, width: context.width(), fit: BoxFit.fill)
+                cachedImage(widget.articles.articleImage.validate(),
+                        height: context.height() * 0.32,
+                        width: context.width(),
+                        fit: BoxFit.fill)
                     .cornerRadiusWithClipRRect(defaultRadius)
                     .paddingSymmetric(horizontal: 16),
                 Positioned(
@@ -63,15 +74,21 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
                   bottom: 12,
                   child: Container(
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                    decoration: boxDecorationWithRoundedCorners(borderRadius: radius(8)),
+                    decoration: boxDecorationWithRoundedCorners(
+                        borderRadius: radius(8)),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(MaterialCommunityIcons.clock_time_five_outline, size: 18, color: primaryColor),
+                        Icon(MaterialCommunityIcons.clock_time_five_outline,
+                            size: 18, color: primaryColor),
                         4.width,
-                        Text(parseDocumentDate(DateTime.parse(widget.articles.createdAt.validate())), style: primaryTextStyle(color: primaryColor, size: 14)),
+                        Text(
+                            parseDocumentDate(DateTime.parse(
+                                widget.articles.createdAt.validate())),
+                            style: primaryTextStyle(
+                                color: primaryColor, size: 14)),
                       ],
                     ),
                   ),
@@ -79,7 +96,9 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
               ],
             ),
             20.height,
-            Text(widget.articles.name.validate().capitalizeFirstLetter(), style: boldTextStyle(size: 20)).paddingSymmetric(horizontal: 16),
+            Text(widget.articles.name.validate().capitalizeFirstLetter(),
+                    style: boldTextStyle(size: 20))
+                .paddingSymmetric(horizontal: 16),
             20.height,
             Wrap(
               runSpacing: 8,
@@ -87,13 +106,33 @@ class _NewsDetailsScreenState extends State<NewsDetailsScreen> {
               children: List.generate(widget.articles.tags!.length, (index) {
                 return Container(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: boxDecorationWithRoundedCorners(backgroundColor: context.cardColor, borderRadius: radius(24), border: Border.all(width: 0.3, color: primaryColor)),
-                  child: Text(widget.articles.tags![index].name.validate(), style: secondaryTextStyle(color: primaryColor), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  decoration: boxDecorationWithRoundedCorners(
+                      backgroundColor: context.cardColor,
+                      borderRadius: radius(24),
+                      border: Border.all(width: 0.3, color: primaryColor)),
+                  child: Text(widget.articles.tags![index].name.validate(),
+                      style: secondaryTextStyle(color: primaryColor),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis),
                 ).onTap(() {
-                  TagsScreen(id: widget.articles.tags![index].id.validate(), title: widget.articles.tags![index].name.validate()).launch(context);
+                  TagsScreen(
+                          id: widget.articles.tags![index].id.validate(),
+                          title: widget.articles.tags![index].name.validate())
+                      .launch(context);
                 });
               }),
             ).paddingSymmetric(horizontal: 16),
+            30.height.visible(widget.articles.description.isEmptyOrNull),
+            Text(
+              parseHtmlString(widget.articles.description.validate()),
+              style: secondaryTextStyle(size: 14),
+              // maxLines: 2,
+              // overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.start,
+            )
+                .visible(!widget.articles.description.isEmptyOrNull)
+                .paddingSymmetric(horizontal: 16)
+                .paddingOnly(bottom: 20),
             // HtmlWidget(postContent: widget.articles.description.validate(), color: appStore.isDarkModeOn ? Colors.white : Colors.black).paddingSymmetric(horizontal: 10),
           ]),
         ));

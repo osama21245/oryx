@@ -10,6 +10,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_vector_icons/flutter_vector_icons.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:orex/components/payment_web_view.dart';
 import 'package:orex/models/filter_category_model.dart';
 
 import '../components/AmenityTextFiledComponent.dart';
@@ -213,7 +214,8 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   Widget filterItem(FilterCategoryModel? model) {
     print('model!.toJson(): ${model?.toJson()}');
     return DropdownButtonFormField<Option>(
-      icon: Icon(Icons.keyboard_arrow_down_rounded, color: black),
+      icon: Icon(Icons.keyboard_arrow_down_rounded,
+          color: appStore.isDarkModeOn ? textOnDarkMode : textOnLightMode),
       decoration: InputDecoration(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
@@ -290,6 +292,38 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
 
   // region Add Properties Api
   Future saveProperty() async {
+    bool? paymentConfirmed = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('تأكيد الدفع', style: boldTextStyle()),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('هل تريد الدفع والحفظ؟', style: primaryTextStyle()),
+              10.height,
+              Text('سعر النشر: 200 جنية', style: secondaryTextStyle()),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text('إلغاء', style: primaryTextStyle(color: Colors.grey)),
+              onPressed: () => Navigator.pop(context, false),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+              ),
+              child: Text('دفع وحفظ',
+                  style: primaryTextStyle(color: Colors.white)),
+              onPressed: () => Navigator.pop(context, true),
+            ),
+          ],
+        );
+      },
+    );
+    if (paymentConfirmed != true) return;
     hideKeyboard(context);
     appStore.setLoading(true);
     setState(() {});
@@ -297,6 +331,7 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
         ? await getMultiPartRequest('property-save')
         : await getMultiPartRequest('property-update/${widget.pId}');
     // Build filter_options map
+    print('responsssssssssssssssssssss $multiPartRequest');
     Map<String, dynamic> filterOptionsMap = {};
     for (var filter in filterCategoryList) {
       var value = selectedOptions[filter.name ?? ''];
@@ -384,26 +419,54 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
     multiPartRequest.headers.addAll(buildHeaderTokens());
     sendMultiPartRequest(
       multiPartRequest,
-      onSuccess: (data) async {
-        if ((data as String).isJson()) {
-          EPropertyBaseResponse res =
-              EPropertyBaseResponse.fromJson(jsonDecode(data));
-          print("Response is ${res.toJson()}");
-          appStore.setLoading(false);
-          if (res.message == "Property has been save successfully") {
-            toast(res.message.toString());
-            SuccessPropertyScreen(propertyId: res.propertyId).launch(context);
-            appStore.addPropertyIndex = 0;
-          } else if (res.message == "Plan Has Expired") {
-            toast(res.message.toString());
+      onSuccess: (dynamic data) async {
+        try {
+          // Check if data is a String and needs parsing
+          var jsonData = data is String ? jsonDecode(data) : data;
 
-            SubscribeScreen().launch(context);
+          if (jsonData != null && jsonData['data'] != null) {
+            String paymentUrl = jsonData['data'].toString();
+
+            // Navigate to WebView for payment
+            final paymentResult = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => WebViewScreenPay(uri: paymentUrl),
+              ),
+            );
+
+            // Handle payment result
+            if (paymentResult != null) {
+              try {
+                final Map<String, dynamic> result =
+                    Map<String, dynamic>.from(paymentResult);
+
+                print(
+                    '✅ status: ${result['status']} type: ${result['status'].runtimeType}');
+
+                if (result['status'] == true ||
+                    result['status'].toString().toLowerCase() == 'true') {
+                  // Success
+                  final res = EPropertyBaseResponse.fromJson(result);
+                  toast(res.message.toString());
+                  SuccessPropertyScreen(propertyId: res.propertyId)
+                      .launch(context);
+                  appStore.addPropertyIndex = 0;
+                } else {
+                  toast('❌ الدفع فشل: ${result['message']}');
+                  appStore.addPropertyIndex = 0;
+                  finish(context, true);
+                }
+              } catch (e) {
+                toast('⚠️ خطأ أثناء معالجة الدفع: $e');
+              }
+            }
           } else {
-            toast(res.message.toString());
-
-            appStore.addPropertyIndex = 0;
-            finish(context, true);
+            toast('Invalid payment URL received');
           }
+        } catch (e) {
+          print('Error processing payment: $e');
+          toast('Error processing payment');
         }
         isAmenityIsEmpty = false;
       },
@@ -506,141 +569,152 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
   @override
   Widget build(BuildContext context) {
     return Observer(builder: (context) {
-      return Scaffold(
-        appBar: appBarWidget(
-          widget.updateProperty.validate()
-              ? language.updateProperty
-              : language.addProperty,
-          context1: context,
-          titleSpace: 0,
-          showBack: true,
-          actions: [
-            Text("${appStore.addPropertyIndex + 1}" + "/" + "3",
-                    style: secondaryTextStyle())
-                .paddingOnly(right: 30, top: 15),
-          ],
-          backWidget: Icon(Octicons.chevron_left, color: primaryColor, size: 28)
-              .onTap(() {
-            print(appStore.addPropertyIndex.toString());
-            setState(() {
-              if (appStore.addPropertyIndex == 0) {
-                finish(context);
-                finish(context);
-              } else {
-                appStore.addPropertyIndex--;
-              }
-            });
-          }),
-          elevation: 0,
-        ),
-        body: Stack(
-          children: [
-            Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: List.generate(3, (i) {
-                    return Container(
-                      alignment: Alignment.center,
-                      height: 3,
-                      width: context.width() / 3.5,
-                      decoration: boxDecorationWithRoundedCorners(
-                          backgroundColor: appStore.addPropertyIndex >= i
-                              ? primaryColor
-                              : dividerColor),
-                    );
-                  }).toList(),
-                ).paddingSymmetric(horizontal: 12),
-                ListView(
-                  children: [
-                    if (appStore.addPropertyIndex == 0) addPropertyComponent1(),
-                    if (appStore.addPropertyIndex == 1) addPropertyComponent2(),
-                    if (appStore.addPropertyIndex == 2) addPropertyComponent3(),
-                  ],
-                ).expand()
-              ],
-            ),
-            Loader().center().visible(appStore.isLoading),
-          ],
-        ),
-        bottomNavigationBar: appStore.isLoading
-            ? CircularProgressIndicator().center()
-            : AppButton(
-                text: appStore.addPropertyIndex == 0 ||
-                        appStore.addPropertyIndex == 1
-                    ? language.Continue
-                    : language.submit,
-                width: context.width(),
-                color: primaryColor,
-                textColor: Colors.white,
-                onTap: appStore.isLoading
-                    ? null
-                    : () {
-                        try {
-                          if (appStore.addPropertyIndex == 0) {
-                            if (selectedCategoryId != null) {
-                              appStore.addPropertyIndex = 1;
-                              getFilterCategory(); // Add this line to call getFilterCategory
-                            } else {
-                              toast(language.pleaseSelectCategory);
-                            }
-                          } else if (appStore.addPropertyIndex == 1) {
-                            if (mSecondComponentFormKey.currentState!
-                                .validate()) {
-                              if (widget.propertyFor == 0 ||
-                                  widget.propertyFor == 2) {
-                                if (priceDurationValue != null &&
-                                        selectedBhkIndex != null
-                                    //  &&
-                                    // latitude != null &&
-                                    // longitude != null &&
-                                    // mapLocation.text.isNotEmpty
-                                    ) {
-                                  appStore.addPropertyIndex = 2;
+      return SafeArea(
+        child: Scaffold(
+          appBar: appBarWidget(
+            widget.updateProperty.validate()
+                ? language.updateProperty
+                : language.addProperty,
+            context1: context,
+            titleSpace: 0,
+            showBack: true,
+            actions: [
+              Text("${appStore.addPropertyIndex + 1}" + "/" + "3",
+                      style: secondaryTextStyle())
+                  .paddingOnly(right: 30, top: 15),
+            ],
+            backWidget:
+                Icon(Octicons.chevron_left, color: primaryColor, size: 28)
+                    .onTap(() {
+              print(appStore.addPropertyIndex.toString());
+              setState(() {
+                if (appStore.addPropertyIndex == 0) {
+                  finish(context);
+                  finish(context);
+                } else {
+                  appStore.addPropertyIndex--;
+                }
+              });
+            }),
+            elevation: 0,
+          ),
+          body: Stack(
+            children: [
+              Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: List.generate(3, (i) {
+                      return Container(
+                        alignment: Alignment.center,
+                        height: 3,
+                        width: context.width() / 3.5,
+                        decoration: boxDecorationWithRoundedCorners(
+                            backgroundColor: appStore.addPropertyIndex >= i
+                                ? primaryColor
+                                : dividerColor),
+                      );
+                    }).toList(),
+                  ).paddingSymmetric(horizontal: 12),
+                  ListView(
+                    children: [
+                      if (appStore.addPropertyIndex == 0)
+                        addPropertyComponent1(),
+                      if (appStore.addPropertyIndex == 1)
+                        addPropertyComponent2(),
+                      if (appStore.addPropertyIndex == 2)
+                        addPropertyComponent3(),
+                    ],
+                  ).expand()
+                ],
+              ),
+              Loader().center().visible(appStore.isLoading),
+            ],
+          ),
+          bottomNavigationBar: appStore.isLoading
+              ? CircularProgressIndicator().center()
+              : SafeArea(
+                  child: AppButton(
+                    text: appStore.addPropertyIndex == 0 ||
+                            appStore.addPropertyIndex == 1
+                        ? language.Continue
+                        : language.submit,
+                    width: context.width(),
+                    color: primaryColor,
+                    textColor: Colors.white,
+                    onTap: appStore.isLoading
+                        ? null
+                        : () {
+                            try {
+                              if (appStore.addPropertyIndex == 0) {
+                                if (selectedCategoryId != null) {
+                                  appStore.addPropertyIndex = 1;
+                                  getFilterCategory(); // Add this line to call getFilterCategory
                                 } else {
-                                  if (priceDurationValue.isEmptyOrNull)
-                                    toast(language.pleaseSelectPriceDuration);
-                                  if (mainImagePath.isEmptyOrNull)
-                                    toast(language.pleaseSelectMainPicture);
-                                  if (selectedImages.isEmpty)
-                                    toast(language.pleaseSelectOtherPicture);
-                                  if (selectedBhkIndex == null)
-                                    toast(language.pleaseSelectBHK);
-                                  // if (mapLocation.text.isEmpty) toast(language.pleaseSelectAddress);
+                                  toast(language.pleaseSelectCategory);
                                 }
-                              } else {
-                                print('dddddddddddddddddddddddddd');
-                                if (selectedImages.isNotEmpty &&
-                                    mainImagePath != null &&
-                                    selectedBhkIndex != null) {
-                                  appStore.addPropertyIndex = 2;
+                              } else if (appStore.addPropertyIndex == 1) {
+                                if (mSecondComponentFormKey.currentState!
+                                    .validate()) {
+                                  if (widget.propertyFor == 0 ||
+                                      widget.propertyFor == 2) {
+                                    if (priceDurationValue != null &&
+                                            selectedBhkIndex != null
+                                        //  &&
+                                        // latitude != null &&
+                                        // longitude != null &&
+                                        // mapLocation.text.isNotEmpty
+                                        ) {
+                                      appStore.addPropertyIndex = 2;
+                                    } else {
+                                      if (priceDurationValue.isEmptyOrNull)
+                                        toast(
+                                            language.pleaseSelectPriceDuration);
+                                      if (mainImagePath.isEmptyOrNull)
+                                        toast(language.pleaseSelectMainPicture);
+                                      if (selectedImages.isEmpty)
+                                        toast(
+                                            language.pleaseSelectOtherPicture);
+                                      if (selectedBhkIndex == null)
+                                        toast(language.pleaseSelectBHK);
+                                      // if (mapLocation.text.isEmpty) toast(language.pleaseSelectAddress);
+                                    }
+                                  } else {
+                                    print('dddddddddddddddddddddddddd');
+                                    if (selectedImages.isNotEmpty &&
+                                        mainImagePath != null &&
+                                        selectedBhkIndex != null) {
+                                      appStore.addPropertyIndex = 2;
 
-                                  setState(() {});
-                                } else {
-                                  if (mainImagePath == null)
-                                    toast(language.pleaseSelectMainPicture);
-                                  if (selectedImages.isEmpty)
-                                    toast(language.pleaseSelectOtherPicture);
-                                  if (selectedBhkIndex == null)
-                                    toast(language.pleaseSelectBHK);
+                                      setState(() {});
+                                    } else {
+                                      if (mainImagePath == null)
+                                        toast(language.pleaseSelectMainPicture);
+                                      if (selectedImages.isEmpty)
+                                        toast(
+                                            language.pleaseSelectOtherPicture);
+                                      if (selectedBhkIndex == null)
+                                        toast(language.pleaseSelectBHK);
+                                    }
+                                  }
+                                }
+                                log('Selected index $selectedCategoryId');
+                                addSelectedCategoryData();
+                              } else {
+                                if (mThirdComponentFormKey.currentState!
+                                    .validate()) {
+                                  saveProperty();
+                                  selectedOptions.clear();
                                 }
                               }
+                              setState(() {});
+                            } catch (error) {
+                              print('errooooooooo$error');
                             }
-                            log('Selected index $selectedCategoryId');
-                            addSelectedCategoryData();
-                          } else {
-                            if (mThirdComponentFormKey.currentState!
-                                .validate()) {
-                              saveProperty();
-                              selectedOptions.clear();
-                            }
-                          }
-                          setState(() {});
-                        } catch (error) {
-                          print('errooooooooo$error');
-                        }
-                      },
-              ).paddingOnly(right: 16, bottom: 16, left: 16, top: 0),
+                          },
+                  ).paddingOnly(right: 16, bottom: 20, left: 16, top: 0),
+                ),
+        ),
       );
     });
   }
@@ -715,7 +789,12 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
                     child: Row(
                       children: [
                         cachedImage(categoryData[i].categoryImage,
-                                height: 30, width: 30, fit: BoxFit.fill)
+                                height: 30,
+                                width: 30,
+                                fit: BoxFit.fill,
+                                color: appStore.isDarkModeOn
+                                    ? textOnDarkMode
+                                    : textOnLightMode)
                             .cornerRadiusWithClipRRect(8),
                         10.width,
                         Text(categoryData[i].name.toString(),
@@ -976,18 +1055,18 @@ class _AddPropertyScreenState extends State<AddPropertyScreen> {
             //   decoration: defaultInputDecoration(context,
             //       label: language.enterMaintenanceCharge),
             // ),
-            20.height,
-            RequiredValidationText(required: true, titleText: language.address),
-            10.height,
-            AppTextField(
-              textInputAction: TextInputAction.go,
-              controller: addressController,
-              textFieldType: TextFieldType.NAME,
-              keyboardType: TextInputType.streetAddress,
-              decoration:
-                  defaultInputDecoration(context, label: language.address),
-            ),
-            20.height,
+            // 20.height,
+            // RequiredValidationText(required: true, titleText: language.address),
+            // 10.height,
+            // AppTextField(
+            //   textInputAction: TextInputAction.go,
+            //   controller: addressController,
+            //   textFieldType: TextFieldType.NAME,
+            //   keyboardType: TextInputType.streetAddress,
+            //   decoration:
+            //       defaultInputDecoration(context, label: language.address),
+            // ),
+            // 20.height,
             // GestureDetector(
             //   onTap: () async {
             //     // PlaceAddressModel? res = await GoogleMapScreen(
