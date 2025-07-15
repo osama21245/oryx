@@ -157,7 +157,7 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
 
     // البيانات العامة
     multiPartRequest.fields['category_id'] = selectedCategoryId.toString();
-    multiPartRequest.fields['property_id'] = selectedProperty;
+    multiPartRequest.fields['property_id'] = selectedProperty!;
     multiPartRequest.fields['name'] = propertyNameController.text;
     multiPartRequest.fields['status'] = '1';
     multiPartRequest.fields['description'] = descriptionController.text;
